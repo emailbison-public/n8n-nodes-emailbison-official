@@ -1,0 +1,286 @@
+import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+
+export async function executeWorkspaceOperation(
+	this: IExecuteFunctions,
+	operation: string,
+	index: number,
+): Promise<IDataObject | INodeExecutionData[]> {
+	const credentials = await this.getCredentials('emailBisonApi');
+
+	if (operation === 'get') {
+		const teamId = this.getNodeParameter('teamId', index) as string;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/workspaces/v1.1/${teamId}`,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'getMany') {
+		const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
+		const qs: IDataObject = {};
+
+		if (!returnAll) {
+			const limit = this.getNodeParameter('limit', index, 50) as number;
+			qs.limit = limit;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1',
+				qs,
+			},
+		);
+
+		const workspaces = responseData.data || responseData;
+		return workspaces.map((workspace: IDataObject) => ({ json: workspace }));
+	}
+
+	if (operation === 'create') {
+		const name = this.getNodeParameter('name', index) as string;
+
+		const body: IDataObject = { name };
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'update') {
+		const teamId = this.getNodeParameter('teamId', index) as string;
+		const name = this.getNodeParameter('name', index, '') as string;
+
+		const body: IDataObject = {};
+		if (name) body.name = name;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'PUT',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/workspaces/v1.1/${teamId}`,
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'delete') {
+		const teamId = this.getNodeParameter('teamId', index) as string;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/workspaces/v1.1/${teamId}`,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'createUser') {
+		const email = this.getNodeParameter('email', index) as string;
+		const firstName = this.getNodeParameter('firstName', index, '') as string;
+		const lastName = this.getNodeParameter('lastName', index, '') as string;
+
+		const body: IDataObject = { email };
+		if (firstName) body.first_name = firstName;
+		if (lastName) body.last_name = lastName;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/users',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'createApiToken') {
+		const teamId = this.getNodeParameter('teamId', index) as string;
+		const name = this.getNodeParameter('name', index, '') as string;
+
+		const body: IDataObject = {};
+		if (name) body.name = name;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/workspaces/v1.1/${teamId}/api-tokens`,
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'switchWorkspace') {
+		const teamId = this.getNodeParameter('teamId', index) as string;
+
+		const body: IDataObject = { team_id: parseInt(teamId, 10) };
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/switch-workspace',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'inviteMembers') {
+		const email = this.getNodeParameter('email', index) as string;
+		const role = this.getNodeParameter('role', index, 'member') as string;
+
+		const body: IDataObject = {
+			email,
+			role,
+		};
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/invite-members',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'acceptInvitation') {
+		const teamInvitationId = this.getNodeParameter('teamInvitationId', index) as string;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/workspaces/v1.1/accept/${teamInvitationId}`,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'deleteMember') {
+		const userId = this.getNodeParameter('userId', index) as string;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/workspaces/v1.1/members/${userId}`,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'getMasterInboxSettings') {
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/master-inbox-settings',
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'updateMasterInboxSettings') {
+		const settings = this.getNodeParameter('settings', index, {}) as IDataObject;
+
+		const body: IDataObject = settings;
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'PATCH',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/master-inbox-settings',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'getStats') {
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/stats',
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'getLineAreaChartStats') {
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/workspaces/v1.1/line-area-chart-stats',
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	throw new Error(`The operation "${operation}" is not supported for workspaces!`);
+}

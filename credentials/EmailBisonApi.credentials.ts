@@ -1,0 +1,62 @@
+import type {
+  IAuthenticateGeneric,
+  ICredentialTestRequest,
+  ICredentialType,
+  INodeProperties,
+} from 'n8n-workflow';
+
+export class EmailBisonApi implements ICredentialType {
+  name = 'emailBisonApi';
+
+  displayName = 'EmailBison API';
+
+  documentationUrl = 'https://docs.emailbison.com/get-started/authentication';
+
+  properties: INodeProperties[] = [
+    {
+      displayName: 'Server URL',
+      name: 'serverUrl',
+      type: 'string',
+      default: 'https://send.topoffunnel.com',
+      placeholder: 'https://send.youragency.com',
+      description: 'The base URL of your EmailBison instance (without /api)',
+      required: true,
+    },
+    {
+      displayName: 'API Token',
+      name: 'apiToken',
+      type: 'string',
+      typeOptions: { password: true },
+      default: '',
+      description: 'Your EmailBison API token (Bearer prefix will be added automatically)',
+      required: true,
+    },
+  ];
+
+  authenticate: IAuthenticateGeneric = {
+    type: 'generic',
+    properties: {
+      headers: {
+        Authorization: '=Bearer {{$credentials.apiToken}}',
+      },
+    },
+  };
+
+  test: ICredentialTestRequest = {
+    request: {
+      baseURL: '={{$credentials.serverUrl}}/api',
+      url: '/users',
+      method: 'GET',
+    },
+    rules: [
+      {
+        type: 'responseSuccessBody',
+        properties: {
+          key: 'data',
+          message: 'Invalid credentials or server URL. Please check your API token and server URL.',
+          value: undefined,
+        },
+      },
+    ],
+  };
+}

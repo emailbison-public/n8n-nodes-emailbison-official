@@ -1,0 +1,81 @@
+{
+  "name": "n8n-nodes-emailbison",
+  "version": "1.0.0",
+  "description": "n8n community node for EmailBison - A white-labeled email outreach platform with dynamic server URL support",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "emailbison",
+    "email",
+    "outreach",
+    "automation",
+    "marketing",
+    "white-label"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/your-username/n8n-nodes-emailbison",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/n8n-nodes-emailbison.git"
+  },
+  "engines": {
+    "node": ">=18.10",
+    "pnpm": ">=9.1"
+  },
+  "packageManager": "pnpm@9.1.4",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes/**/*.ts credentials/**/*.ts",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/EmailBisonApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/EmailBison/EmailBison.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^18.19.130",
+    "@typescript-eslint/parser": "^7.15.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.1",
+    "gulp": "^4.0.2",
+    "jest": "^29.7.0",
+    "n8n-workflow": "^1.40.0",
+    "prettier": "^3.3.2",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.5.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/test/**/*.test.ts"
+    ],
+    "collectCoverageFrom": [
+      "nodes/**/*.ts",
+      "credentials/**/*.ts",
+      "!**/node_modules/**"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
