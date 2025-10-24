@@ -18,12 +18,14 @@ export const leadOperations: INodeProperties[] = [
 				description: 'Create a new lead',
 				action: 'Create a lead',
 			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: 'Delete a lead',
-				action: 'Delete a lead',
-			},
+			// NOTE: DELETE endpoint does not exist in EmailBison API (as of 2025-10-19)
+			// Commented out but kept for future implementation
+			// {
+			// 	name: 'Delete',
+			// 	value: 'delete',
+			// 	description: 'Delete a lead',
+			// 	action: 'Delete a lead',
+			// },
 			{
 				name: 'Get',
 				value: 'get',
@@ -54,7 +56,7 @@ export const leadOperations: INodeProperties[] = [
 ];
 
 export const leadFields: INodeProperties[] = [
-	// Get/Update/Delete operation fields - Lead selector (must come FIRST for update operation)
+	// Get/Update operation fields - Lead selector (must come FIRST for update operation)
 	{
 		displayName: 'Lead',
 		name: 'leadId',
@@ -66,7 +68,7 @@ export const leadFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['lead'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update'], // 'delete' removed - endpoint doesn't exist
 			},
 		},
 		default: '',
@@ -248,7 +250,7 @@ export const leadFields: INodeProperties[] = [
 			},
 		},
 		default: false,
-		description: 'Whether to return all results or only up to a given limit',
+		description: 'Whether to return all results or only up to a given limit. ⚠️ Note: EmailBison API has a hard limit of 15 leads per request. This setting does not change the API behavior.',
 	},
 	{
 		displayName: 'Limit',
@@ -266,7 +268,20 @@ export const leadFields: INodeProperties[] = [
 			maxValue: 100,
 		},
 		default: 50,
-		description: 'Max number of results to return',
+		description: '⚠️ WARNING: The EmailBison API ignores this parameter and always returns a maximum of 15 leads per request. Use the Search and Filters options to narrow down results.',
+	},
+	{
+		displayName: 'Search',
+		name: 'search',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['lead'],
+				operation: ['getMany'],
+			},
+		},
+		default: '',
+		description: 'Search term for filtering leads across multiple fields',
 	},
 	{
 		displayName: 'Filters',
@@ -280,27 +295,59 @@ export const leadFields: INodeProperties[] = [
 			},
 		},
 		default: {},
+		description: 'Additional filters for leads. Note: API returns 15 leads per page maximum.',
 		options: [
 			{
-				displayName: 'Email',
-				name: 'email',
-				type: 'string',
+				displayName: 'Lead Campaign Status',
+				name: 'lead_campaign_status',
+				type: 'options',
+				options: [
+					{ name: 'In Sequence', value: 'in_sequence' },
+					{ name: 'Sequence Finished', value: 'sequence_finished' },
+					{ name: 'Sequence Stopped', value: 'sequence_stopped' },
+					{ name: 'Never Contacted', value: 'never_contacted' },
+					{ name: 'Replied', value: 'replied' },
+				],
 				default: '',
-				description: 'Filter by email address',
+				description: 'Filter by lead campaign status',
 			},
 			{
-				displayName: 'Tag',
-				name: 'tag',
-				type: 'string',
-				default: '',
-				description: 'Filter by tag',
+				displayName: 'Verification Statuses',
+				name: 'verification_statuses',
+				type: 'multiOptions',
+				options: [
+					{ name: 'Verifying', value: 'verifying' },
+					{ name: 'Verified', value: 'verified' },
+					{ name: 'Risky', value: 'risky' },
+					{ name: 'Unknown', value: 'unknown' },
+					{ name: 'Unverified', value: 'unverified' },
+					{ name: 'Inactive', value: 'inactive' },
+					{ name: 'Bounced', value: 'bounced' },
+					{ name: 'Unsubscribed', value: 'unsubscribed' },
+				],
+				default: [],
+				description: 'Filter by verification status (can select multiple)',
 			},
 			{
-				displayName: 'Company',
-				name: 'company',
+				displayName: 'Tag IDs',
+				name: 'tag_ids',
 				type: 'string',
 				default: '',
-				description: 'Filter by company name',
+				description: 'Comma-separated list of tag IDs to filter by (e.g., "1,2,3")',
+			},
+			{
+				displayName: 'Excluded Tag IDs',
+				name: 'excluded_tag_ids',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated list of tag IDs to exclude (e.g., "1,2,3")',
+			},
+			{
+				displayName: 'Without Tags',
+				name: 'without_tags',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to show only leads that have no tags attached',
 			},
 		],
 	},

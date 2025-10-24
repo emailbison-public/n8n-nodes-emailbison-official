@@ -9,12 +9,12 @@ export async function executeTagOperation(
 
 	if (operation === 'create') {
 		const name = this.getNodeParameter('name', index) as string;
-		const color = this.getNodeParameter('color', index, '#007bff') as string;
-		const description = this.getNodeParameter('description', index, '') as string;
+		const defaultTag = this.getNodeParameter('default', index, false) as boolean;
 
 		const body: IDataObject = { name };
-		if (color) body.color = color;
-		if (description) body.description = description;
+		if (defaultTag !== undefined && defaultTag !== null) {
+			body.default = defaultTag;
+		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
@@ -70,33 +70,10 @@ export async function executeTagOperation(
 		return tags.map((tag: IDataObject) => ({ json: tag }));
 	}
 
-	if (operation === 'update') {
-		const tagId = this.getNodeParameter('tagId', index) as string;
-		const color = this.getNodeParameter('color', index, '') as string;
-		const description = this.getNodeParameter('description', index, '') as string;
-
-		const body: IDataObject = {};
-		if (color) body.color = color;
-		if (description) body.description = description;
-
-		const responseData = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'PUT',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: `/tags/${tagId}`,
-				body,
-			},
-		);
-
-		return [{ json: responseData.data || responseData }];
-	}
-
 	if (operation === 'delete') {
 		const tagId = this.getNodeParameter('tagId', index) as string;
 
-		await this.helpers.httpRequestWithAuthentication.call(
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
 			{
@@ -106,18 +83,25 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: { success: true, id: tagId } }];
+		return [{ json: responseData.data || responseData }];
 	}
 
 	if (operation === 'attachToLeads') {
-		// Attach tags to leads
-		const tagIds = this.getNodeParameter('tagIds', index) as string;
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
 		const leadIds = this.getNodeParameter('leadIds', index) as string;
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Parse lead IDs (comma-separated string to array of integers)
+		const leadIdsArray = leadIds.split(',').map((id) => parseInt(id.trim(), 10));
 
 		const body: IDataObject = {
-			tag_ids: tagIds.split(',').map((id: string) => parseInt(id.trim(), 10)),
-			lead_ids: leadIds.split(',').map((id: string) => parseInt(id.trim(), 10)),
+			lead_ids: leadIdsArray,
+			tag_ids: tagIds.map((id) => parseInt(id, 10)),
 		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
@@ -126,6 +110,161 @@ export async function executeTagOperation(
 				method: 'POST',
 				baseURL: `${credentials.serverUrl}/api`,
 				url: '/tags/attach-to-leads',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'removeFromLeads') {
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
+		const leadIds = this.getNodeParameter('leadIds', index) as string;
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Parse lead IDs (comma-separated string to array of integers)
+		const leadIdsArray = leadIds.split(',').map((id) => parseInt(id.trim(), 10));
+
+		const body: IDataObject = {
+			lead_ids: leadIdsArray,
+			tag_ids: tagIds.map((id) => parseInt(id, 10)),
+		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/tags/remove-from-leads',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'attachToCampaigns') {
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
+		const campaignIds = this.getNodeParameter('campaignIds', index) as string;
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Parse campaign IDs (comma-separated string to array of integers)
+		const campaignIdsArray = campaignIds.split(',').map((id) => parseInt(id.trim(), 10));
+
+		const body: IDataObject = {
+			campaign_ids: campaignIdsArray,
+			tag_ids: tagIds.map((id) => parseInt(id, 10)),
+		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/tags/attach-to-campaigns',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'removeFromCampaigns') {
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
+		const campaignIds = this.getNodeParameter('campaignIds', index) as string;
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Parse campaign IDs (comma-separated string to array of integers)
+		const campaignIdsArray = campaignIds.split(',').map((id) => parseInt(id.trim(), 10));
+
+		const body: IDataObject = {
+			campaign_ids: campaignIdsArray,
+			tag_ids: tagIds.map((id) => parseInt(id, 10)),
+		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/tags/remove-from-campaigns',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'attachToEmailAccounts') {
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
+		const emailAccountIds = this.getNodeParameter('emailAccountIds', index) as string;
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Parse email account IDs (comma-separated string to array of integers)
+		const emailAccountIdsArray = emailAccountIds.split(',').map((id) => parseInt(id.trim(), 10));
+
+		const body: IDataObject = {
+			sender_email_ids: emailAccountIdsArray,
+			tag_ids: tagIds.map((id) => parseInt(id, 10)),
+		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/tags/attach-to-sender-emails',
+				body,
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'removeFromEmailAccounts') {
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
+		const emailAccountIds = this.getNodeParameter('emailAccountIds', index) as string;
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Parse email account IDs (comma-separated string to array of integers)
+		const emailAccountIdsArray = emailAccountIds.split(',').map((id) => parseInt(id.trim(), 10));
+
+		const body: IDataObject = {
+			sender_email_ids: emailAccountIdsArray,
+			tag_ids: tagIds.map((id) => parseInt(id, 10)),
+		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/tags/remove-from-sender-emails',
 				body,
 			},
 		);

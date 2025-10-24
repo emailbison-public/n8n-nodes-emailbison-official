@@ -88,19 +88,57 @@ export async function executeLeadOperation(
 	if (operation === 'getMany') {
 		// Get multiple leads
 		const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
+		const search = this.getNodeParameter('search', index, '') as string;
 		const filters = this.getNodeParameter('filters', index, {}) as IDataObject;
 
 		const qs: IDataObject = {};
 
+		// NOTE: EmailBison API has a hard limit of 15 leads per page
+		// There is NO pagination parameter available in the API
+		// The API always returns a maximum of 15 leads
+		// Users should use search and filters to narrow down results
 		if (!returnAll) {
 			const limit = this.getNodeParameter('limit', index, 50) as number;
-			qs.limit = limit;
+			qs.limit = limit; // Kept for compatibility, but API ignores this and returns max 15
 		}
 
-		// Add filters to query string
-		if (filters.email) qs.email = filters.email;
-		if (filters.tag) qs.tag = filters.tag;
-		if (filters.company) qs.company = filters.company;
+		// Add search parameter (top-level, not in filters)
+		if (search) {
+			qs.search = search;
+		}
+
+		// Add filter parameters according to API documentation
+		// All filters are prefixed with 'filters.' in the query string
+		if (filters.lead_campaign_status) {
+			qs['filters.lead_campaign_status'] = filters.lead_campaign_status;
+		}
+
+		if (filters.verification_statuses && Array.isArray(filters.verification_statuses) && filters.verification_statuses.length > 0) {
+			// API expects array format: filters.verification_statuses=value1&filters.verification_statuses=value2
+			qs['filters.verification_statuses'] = filters.verification_statuses;
+		}
+
+		if (filters.tag_ids) {
+			// Convert comma-separated string to array
+			const tagIds = (filters.tag_ids as string).split(',').map((id) => id.trim()).filter((id) => id);
+			if (tagIds.length > 0) {
+				qs['filters.tag_ids'] = tagIds;
+			}
+		}
+
+		if (filters.excluded_tag_ids) {
+			// Convert comma-separated string to array
+			const excludedTagIds = (filters.excluded_tag_ids as string).split(',').map((id) => id.trim()).filter((id) => id);
+			if (excludedTagIds.length > 0) {
+				qs['filters.excluded_tag_ids'] = excludedTagIds;
+			}
+		}
+
+		if (filters.without_tags === true) {
+			qs['filters.without_tags'] = true;
+		}
+
+		console.log('🔍 GET MANY LEADS - Query parameters:', JSON.stringify(qs, null, 2));
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
@@ -113,8 +151,15 @@ export async function executeLeadOperation(
 			},
 		);
 
+		console.log('📊 GET MANY LEADS - API returned:', {
+			leads_count: responseData.data?.length || 0,
+			has_meta: !!responseData.meta,
+		});
+
 		// Extract the leads array from the response
 		const leads = responseData.data || responseData;
+
+		console.log(`✅ GET MANY LEADS - Returning ${leads.length} leads (API max: 15)`);
 
 		// Return in n8n format: array of objects with 'json' property
 		return leads.map((lead: IDataObject) => ({ json: lead }));
@@ -170,22 +215,24 @@ export async function executeLeadOperation(
 		return responseData;
 	}
 
-	if (operation === 'delete') {
-		// Delete lead
-		const leadId = this.getNodeParameter('leadId', index) as string;
+	// NOTE: DELETE endpoint does not exist in EmailBison API (as of 2025-10-19)
+	// Commented out but kept for future implementation
+	// if (operation === 'delete') {
+	// 	// Delete lead
+	// 	const leadId = this.getNodeParameter('leadId', index) as string;
 
-		const responseData = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'DELETE',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: `/leads/${leadId}`,
-			},
-		);
+	// 	const responseData = await this.helpers.httpRequestWithAuthentication.call(
+	// 		this,
+	// 		'emailBisonApi',
+	// 		{
+	// 			method: 'DELETE',
+	// 			baseURL: `${credentials.serverUrl}/api`,
+	// 			url: `/leads/${leadId}`,
+	// 		},
+	// 	);
 
-		return { success: true, id: leadId };
-	}
+	// 	return { success: true, id: leadId };
+	// }
 
 	if (operation === 'attachTags') {
 		// Attach tags to leads
