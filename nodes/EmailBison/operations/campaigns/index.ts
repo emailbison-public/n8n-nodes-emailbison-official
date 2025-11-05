@@ -212,7 +212,7 @@ export const campaignFields: INodeProperties[] = [
 		description: 'Tags to attach to the campaign. Choose from the list, or specify tag IDs using an expression.',
 	},
 
-	// Get/Update/Delete/Start/Stop operation fields
+	// Get/Update/Start/Stop/Pause/AddLeads operation fields
 	{
 		displayName: 'Campaign',
 		name: 'campaignId',
@@ -220,7 +220,7 @@ export const campaignFields: INodeProperties[] = [
 		typeOptions: {
 			loadOptionsMethod: 'getCampaigns',
 		},
-		required: true,
+		// No required flag - validation happens at runtime
 		displayOptions: {
 			show: {
 				resource: ['campaign'],

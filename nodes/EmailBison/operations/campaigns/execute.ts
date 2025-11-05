@@ -149,6 +149,11 @@ export async function executeCampaignOperation(
 		// Get campaign by ID
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
 
+		// Validate required field
+		if (!campaignId || campaignId.trim() === '') {
+			throw new Error('Please select a campaign');
+		}
+
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
