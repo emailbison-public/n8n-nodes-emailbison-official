@@ -86,6 +86,26 @@ export const campaignFields: INodeProperties[] = [
 		default: '',
 		description: 'Name of the campaign',
 	},
+
+	// Update operation - Campaign selection field (appears first)
+	{
+		displayName: 'Campaign',
+		name: 'campaignId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getCampaigns',
+		},
+		// No required flag - validation happens at runtime
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['update'],
+			},
+		},
+		default: '',
+		description: 'The campaign to update. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+
 	{
 		displayName: 'Subject',
 		name: 'subject',
@@ -212,7 +232,7 @@ export const campaignFields: INodeProperties[] = [
 		description: 'Tags to attach to the campaign. Choose from the list, or specify tag IDs using an expression.',
 	},
 
-	// Get/Update/Start/Stop/Pause/AddLeads operation fields
+	// Get/Start/Stop/Pause/AddLeads operation fields (Update has its own field above)
 	{
 		displayName: 'Campaign',
 		name: 'campaignId',
@@ -224,7 +244,7 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['get', 'update', 'start', 'stop', 'pause', 'addLeads'],
+				operation: ['get', 'start', 'stop', 'pause', 'addLeads'],
 			},
 		},
 		default: '',

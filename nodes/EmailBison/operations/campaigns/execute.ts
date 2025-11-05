@@ -201,6 +201,12 @@ export async function executeCampaignOperation(
 	if (operation === 'update') {
 		// Update campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
+
+		// Validate required field
+		if (!campaignId || campaignId.trim() === '') {
+			throw new Error('Please select a campaign to update');
+		}
+
 		const subject = this.getNodeParameter('subject', index, '') as string;
 		const emailContent = this.getNodeParameter('emailContent', index, '') as string;
 		const fromName = this.getNodeParameter('fromName', index, '') as string;
