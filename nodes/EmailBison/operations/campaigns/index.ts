@@ -66,6 +66,12 @@ export const campaignOperations: INodeProperties[] = [
 				description: 'Add leads to a campaign',
 				action: 'Add leads to campaign',
 			},
+			{
+				name: 'Add Sequence Step',
+				value: 'addSequenceStep',
+				description: 'Add a follow-up email step to a campaign sequence',
+				action: 'Add sequence step to campaign',
+			},
 		],
 		default: 'create',
 	},
@@ -77,7 +83,6 @@ export const campaignFields: INodeProperties[] = [
 		displayName: 'Name',
 		name: 'name',
 		type: 'string',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
@@ -91,7 +96,6 @@ export const campaignFields: INodeProperties[] = [
 		displayName: 'Subject',
 		name: 'subject',
 		type: 'string',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
@@ -108,7 +112,6 @@ export const campaignFields: INodeProperties[] = [
 		typeOptions: {
 			rows: 10,
 		},
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
@@ -119,18 +122,20 @@ export const campaignFields: INodeProperties[] = [
 		description: 'HTML content of the email',
 	},
 	{
-		displayName: 'From Email',
-		name: 'fromEmail',
-		type: 'string',
-		required: true,
+		displayName: 'Sender Emails',
+		name: 'senderEmails',
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getSenderEmails',
+		},
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
 				operation: ['create', 'update'],
 			},
 		},
-		default: '',
-		description: 'Sender email address',
+		default: [],
+		description: 'The email accounts to send from. Select one or multiple email accounts. Choose from the list, or specify IDs using an expression.',
 	},
 	{
 		displayName: 'From Name',
@@ -143,7 +148,7 @@ export const campaignFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Sender name',
+		description: 'Sender name (optional - EmailBison will use the name from the connected email account if not provided)',
 	},
 	{
 		displayName: 'Reply To',
@@ -156,7 +161,8 @@ export const campaignFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Reply-to email address',
+		description: 'Reply-to email address (optional)',
+		placeholder: 'reply@example.com',
 	},
 	{
 		displayName: 'Schedule Type',
@@ -198,15 +204,18 @@ export const campaignFields: INodeProperties[] = [
 	{
 		displayName: 'Tags',
 		name: 'tags',
-		type: 'string',
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getTags',
+		},
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
 				operation: ['create', 'update'],
 			},
 		},
-		default: '',
-		description: 'Comma-separated list of tags for the campaign',
+		default: [],
+		description: 'Tags to attach to the campaign. Choose from the list, or specify tag IDs using an expression.',
 	},
 
 	// Get/Update/Delete/Start/Stop operation fields
@@ -327,4 +336,118 @@ export const campaignFields: INodeProperties[] = [
 			},
 		],
 	},
+
+// Add Sequence Step operation fields
+{
+	displayName: 'Campaign',
+	name: 'campaignId',
+	type: 'options',
+	typeOptions: {
+		loadOptionsMethod: 'getCampaigns',
+	},
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['campaign'],
+			operation: ['addSequenceStep'],
+		},
+	},
+	default: '',
+	description: 'The campaign to add the sequence step to. Choose from the list, or specify an ID using an expression.',
+},
+{
+	displayName: 'Email Subject',
+	name: 'emailSubject',
+	type: 'string',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['campaign'],
+			operation: ['addSequenceStep'],
+		},
+	},
+	default: '',
+	description: 'Subject line for this email step',
+},
+{
+	displayName: 'Email Body',
+	name: 'emailBody',
+	type: 'string',
+	typeOptions: {
+		rows: 10,
+	},
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['campaign'],
+			operation: ['addSequenceStep'],
+		},
+	},
+	default: '',
+	description: 'HTML content for this email step',
+},
+{
+	displayName: 'Step Order',
+	name: 'stepOrder',
+	type: 'number',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['campaign'],
+			operation: ['addSequenceStep'],
+		},
+	},
+	default: 2,
+	description: 'The order of this step in the sequence (e.g., 2 for second email, 3 for third)',
+},
+{
+	displayName: 'Wait Days',
+	name: 'waitDays',
+	type: 'number',
+	required: true,
+	displayOptions: {
+		show: {
+			resource: ['campaign'],
+			operation: ['addSequenceStep'],
+		},
+	},
+	default: 3,
+	description: 'Number of days to wait before sending this email after the previous step',
+},
+{
+	displayName: 'Additional Fields',
+	name: 'additionalFields',
+	type: 'collection',
+	placeholder: 'Add Field',
+	default: {},
+	displayOptions: {
+		show: {
+			resource: ['campaign'],
+			operation: ['addSequenceStep'],
+		},
+	},
+	options: [
+		{
+			displayName: 'Sequence Title',
+			name: 'sequenceTitle',
+			type: 'string',
+			default: '',
+			description: 'Optional title for the sequence (defaults to campaign name + " sequence")',
+		},
+		{
+			displayName: 'Is Variant',
+			name: 'variant',
+			type: 'boolean',
+			default: false,
+			description: 'Whether this is a variant email for A/B testing',
+		},
+		{
+			displayName: 'Thread Reply',
+			name: 'threadReply',
+			type: 'boolean',
+			default: false,
+			description: 'Whether this email should be sent as a reply in the same thread',
+		},
+	],
+},
 ];
