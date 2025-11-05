@@ -155,11 +155,12 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 2. Get Many Leads | ✅ | PASS ⚠️ | **API Limitation**: Always returns 15 items max (API ignores limit param) |
 | 3. Update Lead | ✅ | PASS ⚠️ | ✅ first_name, last_name, company confirmed<br>❓ phone, email not in response (can't verify)<br>❌ custom_fields not appearing in response |
 | 3b. Attach Tags to Leads | ✅ | PASS | Bulk operation with dynamic dropdowns - UI validation fixed |
-| 4. Create Campaign | ✅ | PASS | Three-step process working perfectly |
+| 4. Create Campaign | ✅ | PASS | Three-step process working perfectly - UI validation fixed |
 | 4b. Add Sequence Step | ✅ | PASS | Campaign dropdown working, steps added correctly |
 | 4c. Delete Sequence Step | ✅ | PASS | Sequence steps deleted successfully |
-| 5. Get Many Campaigns | ⏳ | - | |
-| 6. Compose Email | ⏳ | - | |
+| 5. Get Campaign | ✅ | PASS | Campaign dropdown working, returns full campaign data - UI validation fixed |
+| 6. Get Many Campaigns | ✅ | PASS | Returns list of campaigns successfully |
+| 7. Compose Email | ⏳ | - | |
 
 **Overall Status:** ⏳ TESTING IN PROGRESS
 
@@ -196,8 +197,8 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
 | Create | POST | `/campaigns` | ✅ | HIGH | Tested - working perfectly |
-| Get | GET | `/campaigns/{id}` | ⏳ | HIGH | Core functionality |
-| Get Many | GET | `/campaigns` | ⏳ | HIGH | List all campaigns |
+| Get | GET | `/campaigns/{id}` | ✅ | HIGH | Tested - working perfectly, UI validation fixed |
+| Get Many | GET | `/campaigns` | ✅ | HIGH | Tested - working perfectly, returns campaign list |
 | Update | PATCH | `/campaigns/{id}` | ⏳ | HIGH | |
 | ~~Delete~~ | ~~DELETE~~ | ~~`/campaigns/{id}`~~ | ❌ | N/A | **NOT SUPPORTED BY API** - Endpoint does not exist |
 | Start | POST | `/campaigns/{id}/start` | ⏳ | HIGH | Critical for automation |
