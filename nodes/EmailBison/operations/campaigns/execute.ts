@@ -256,7 +256,7 @@ export async function executeCampaignOperation(
 			this,
 			'emailBisonApi',
 			{
-				method: 'PUT',
+				method: 'PATCH',
 				baseURL: `${credentials.serverUrl}/api`,
 				url: `/campaigns/${campaignId}`,
 				body,
