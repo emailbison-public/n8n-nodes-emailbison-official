@@ -159,15 +159,18 @@ export const leadFields: INodeProperties[] = [
 	{
 		displayName: 'Tags',
 		name: 'tags',
-		type: 'string',
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getTags',
+		},
 		displayOptions: {
 			show: {
 				resource: ['lead'],
 				operation: ['create', 'update'],
 			},
 		},
-		default: '',
-		description: 'Comma-separated list of tags to assign to the lead',
+		default: [],
+		description: 'Tags to assign to the lead. Choose from the list, or specify IDs using an expression.',
 	},
 	{
 		displayName: 'Custom Fields',
@@ -210,32 +213,49 @@ export const leadFields: INodeProperties[] = [
 
 	// Attach Tags operation fields
 	{
-		displayName: 'Lead IDs',
+		displayName: 'Leads',
 		name: 'leadIds',
-		type: 'string',
-		required: true,
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getLeads',
+		},
 		displayOptions: {
 			show: {
 				resource: ['lead'],
 				operation: ['attachTags'],
 			},
 		},
-		default: '',
-		description: 'Comma-separated list of lead IDs to attach tags to',
+		default: [],
+		description: 'The leads to attach tags to. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
-		displayName: 'Tag IDs',
+		displayName: 'Tags',
 		name: 'tagIds',
-		type: 'string',
-		required: true,
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getTags',
+		},
 		displayOptions: {
 			show: {
 				resource: ['lead'],
 				operation: ['attachTags'],
 			},
 		},
-		default: '',
-		description: 'Comma-separated list of tag IDs to attach to the leads',
+		default: [],
+		description: 'The tags to attach to the leads. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Skip Webhooks',
+		name: 'skipWebhooks',
+		type: 'boolean',
+		displayOptions: {
+			show: {
+				resource: ['lead'],
+				operation: ['attachTags'],
+			},
+		},
+		default: false,
+		description: 'Whether to skip firing webhooks for this action',
 	},
 
 	// Get Many operation fields

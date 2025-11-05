@@ -15,9 +15,10 @@ export async function executeLeadOperation(
 		const company = this.getNodeParameter('company', index, '') as string;
 		const phone = this.getNodeParameter('phone', index, '') as string;
 		const website = this.getNodeParameter('website', index, '') as string;
-		const tags = this.getNodeParameter('tags', index, '') as string;
+		const tags = this.getNodeParameter('tags', index, []) as string[] | string;
 		const customFields = this.getNodeParameter('customFields', index, {}) as IDataObject;
 
+		// Step 1: Create the lead with basic info (tags are NOT supported in create endpoint)
 		const body: IDataObject = {
 			email,
 		};
@@ -27,9 +28,6 @@ export async function executeLeadOperation(
 		if (company) body.company = company;
 		if (phone) body.phone = phone;
 		if (website) body.website = website;
-		if (tags) {
-			body.tags = tags.split(',').map((tag: string) => tag.trim());
-		}
 
 		// Handle custom fields
 		if (customFields && customFields.field) {
@@ -45,7 +43,7 @@ export async function executeLeadOperation(
 			}
 		}
 
-		console.log('🔍 CREATE LEAD - Request body:', JSON.stringify(body, null, 2));
+		console.log('🔍 CREATE LEAD - Step 1: Creating lead with body:', JSON.stringify(body, null, 2));
 
 		try {
 			const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -59,10 +57,48 @@ export async function executeLeadOperation(
 				},
 			);
 
-			console.log('✅ CREATE LEAD - Response:', JSON.stringify(responseData, null, 2));
-			return [{ json: responseData.data || responseData }];
+			console.log('✅ CREATE LEAD - Step 1: Lead created:', JSON.stringify(responseData, null, 2));
+
+			const leadData = responseData.data || responseData;
+			const leadId = leadData.id;
+
+			// Step 2: Attach tags if provided (tags must be attached separately)
+			if (tags && tags.length > 0 && leadId) {
+				// Convert tags to array of integers
+				let tagIds: number[] = [];
+				if (Array.isArray(tags)) {
+					tagIds = tags.map((tag: string) => parseInt(tag, 10));
+				} else {
+					tagIds = tags.split(',').map((tag: string) => parseInt(tag.trim(), 10));
+				}
+
+				console.log(`🔍 CREATE LEAD - Step 2: Attaching ${tagIds.length} tags to lead ${leadId}:`, tagIds);
+
+				try {
+					await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'emailBisonApi',
+						{
+							method: 'POST',
+							baseURL: `${credentials.serverUrl}/api`,
+							url: '/tags/attach-to-leads',
+							body: {
+								lead_ids: [leadId],
+								tag_ids: tagIds,
+							},
+						},
+					);
+					console.log('✅ CREATE LEAD - Step 2: Tags attached successfully');
+				} catch (error: any) {
+					console.error('❌ CREATE LEAD - Step 2: Failed to attach tags:', error.message);
+					// Don't throw - lead was created successfully, just tags failed
+					console.warn('⚠️ CREATE LEAD - Lead created but tags were not attached');
+				}
+			}
+
+			return [{ json: leadData }];
 		} catch (error: any) {
-			console.error('❌ CREATE LEAD - Error:', error.message);
+			console.error('❌ CREATE LEAD - Step 1: Error creating lead:', error.message);
 			console.error('❌ CREATE LEAD - Error details:', JSON.stringify(error.response?.body || error, null, 2));
 			throw error;
 		}
@@ -173,7 +209,7 @@ export async function executeLeadOperation(
 		const company = this.getNodeParameter('company', index, '') as string;
 		const phone = this.getNodeParameter('phone', index, '') as string;
 		const website = this.getNodeParameter('website', index, '') as string;
-		const tags = this.getNodeParameter('tags', index, '') as string;
+		const tags = this.getNodeParameter('tags', index, []) as string[] | string;
 		const customFields = this.getNodeParameter('customFields', index, {}) as IDataObject;
 
 		const body: IDataObject = {};
@@ -183,8 +219,14 @@ export async function executeLeadOperation(
 		if (company) body.company = company;
 		if (phone) body.phone = phone;
 		if (website) body.website = website;
-		if (tags) {
-			body.tags = tags.split(',').map((tag: string) => tag.trim());
+
+		// Handle tags - support both array (from dropdown) and string (from expression)
+		if (tags && tags.length > 0) {
+			if (Array.isArray(tags)) {
+				body.tags = tags;
+			} else {
+				body.tags = tags.split(',').map((tag: string) => tag.trim());
+			}
 		}
 
 		// Handle custom fields
@@ -235,14 +277,31 @@ export async function executeLeadOperation(
 	// }
 
 	if (operation === 'attachTags') {
-		// Attach tags to leads
-		const leadIds = this.getNodeParameter('leadIds', index) as string;
-		const tagIds = this.getNodeParameter('tagIds', index) as string;
+		// Attach tags to leads (bulk operation)
+		const leadIds = this.getNodeParameter('leadIds', index) as string[];
+		const tagIds = this.getNodeParameter('tagIds', index) as string[];
+		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
+
+		// Validate required fields
+		if (!leadIds || leadIds.length === 0) {
+			throw new Error('Please select at least one lead to attach tags to');
+		}
+		if (!tagIds || tagIds.length === 0) {
+			throw new Error('Please select at least one tag to attach');
+		}
+
+		// Convert string arrays to integer arrays
+		const leadIdsArray = leadIds.map((id: string) => parseInt(id, 10));
+		const tagIdsArray = tagIds.map((id: string) => parseInt(id, 10));
 
 		const body: IDataObject = {
-			lead_ids: leadIds.split(',').map((id: string) => parseInt(id.trim(), 10)),
-			tag_ids: tagIds.split(',').map((id: string) => parseInt(id.trim(), 10)),
+			lead_ids: leadIdsArray,
+			tag_ids: tagIdsArray,
 		};
+
+		if (skipWebhooks) {
+			body.skip_webhooks = true;
+		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
