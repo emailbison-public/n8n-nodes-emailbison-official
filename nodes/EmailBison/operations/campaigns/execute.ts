@@ -277,23 +277,6 @@ export async function executeCampaignOperation(
 		return [{ json: responseData.data || responseData }];
 	}
 
-	if (operation === 'delete') {
-		// Delete campaign
-		const campaignId = this.getNodeParameter('campaignId', index) as string;
-
-		await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'DELETE',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: `/campaigns/${campaignId}`,
-			},
-		);
-
-		return [{ json: { success: true, id: campaignId } }];
-	}
-
 	if (operation === 'start') {
 		// Start campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;

@@ -8,7 +8,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 ## ✅ Critical Tests for V1 Release (Complete These First!)
 
 ### Test 1: Create a Lead
-**Status:** ⏳ NOT TESTED
+**Status:** ✅ TESTED & WORKING
 **Priority:** CRITICAL
 
 **Steps:**
@@ -16,18 +16,20 @@ Verify all implemented operations work correctly with the EmailBison API before 
 2. Select Resource: **Lead**
 3. Select Operation: **Create**
 4. Fill in:
-   - Email: `test-n8n@example.com`
+   - Email: `test@testexample.com`
    - First Name: `Test`
-   - Last Name: `User`
-   - Company: `n8n Testing`
+   - Last Name: `Testing`
+   - Company: `Test Company`
+   - Tags: Select from dropdown
 5. Execute node
 
 **Expected Result:**
 - ✅ No errors
 - ✅ Returns lead object with ID
 - ✅ Lead appears in EmailBison dashboard
+- ✅ Tags properly attached via two-step process
 
-**Actual Result:** _[Fill in after testing]_
+**Actual Result:** ✅ **PASS** - Lead created successfully with ID 33500. Two-step process working perfectly (create lead → attach tags). Tags dropdown working correctly. Lead appears in EmailBison UI with all data populated.
 
 ---
 
@@ -76,7 +78,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 ---
 
 ### Test 4: Create a Campaign
-**Status:** ⏳ NOT TESTED
+**Status:** ✅ TESTED & WORKING
 **Priority:** CRITICAL
 
 **Steps:**
@@ -87,15 +89,17 @@ Verify all implemented operations work correctly with the EmailBison API before 
    - Name: `Test Campaign n8n`
    - Subject: `Test Subject`
    - Email Content: `<p>Test email content</p>`
-   - From Email: `[your-email-account-id]`
+   - Sender Emails: Select from dropdown
 5. Execute node
 
 **Expected Result:**
 - ✅ No errors
 - ✅ Returns campaign ID
 - ✅ Campaign appears in EmailBison dashboard
+- ✅ Sender emails attached correctly
+- ✅ First sequence step created with subject and content
 
-**Actual Result:** _[Fill in after testing]_
+**Actual Result:** ✅ **PASS** - Campaign created successfully with all data populated. Three-step process (create campaign → attach sender emails → create sequence step) working perfectly. Campaign appears in EmailBison UI with STEP 1 showing correct subject and email content.
 
 ---
 
@@ -146,10 +150,14 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 | Test | Status | Pass/Fail | Notes |
 |------|--------|-----------|-------|
-| 1. Create Lead | ⏳ | - | |
-| 2. Get Many Leads | ⏳ | - | |
-| 3. Update Lead | ⏳ | - | |
-| 4. Create Campaign | ⏳ | - | |
+| 1. Create Lead | ✅ | PASS | Two-step process working (create → attach tags) |
+| 1b. Get Lead | ✅ | PASS | Lead dropdown working, returns full lead data |
+| 2. Get Many Leads | ✅ | PASS ⚠️ | **API Limitation**: Always returns 15 items max (API ignores limit param) |
+| 3. Update Lead | ✅ | PASS ⚠️ | ✅ first_name, last_name, company confirmed<br>❓ phone, email not in response (can't verify)<br>❌ custom_fields not appearing in response |
+| 3b. Attach Tags to Leads | ✅ | PASS | Bulk operation with dynamic dropdowns - UI validation fixed |
+| 4. Create Campaign | ✅ | PASS | Three-step process working perfectly |
+| 4b. Add Sequence Step | ✅ | PASS | Campaign dropdown working, steps added correctly |
+| 4c. Delete Sequence Step | ✅ | PASS | Sequence steps deleted successfully |
 | 5. Get Many Campaigns | ⏳ | - | |
 | 6. Compose Email | ⏳ | - | |
 
@@ -164,16 +172,21 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
-| Create | POST | `/leads` | ⏳ | HIGH | Core functionality |
-| Get | GET | `/leads/{id}` | ⏳ | HIGH | Core functionality |
-| Get Many | GET | `/leads` | ✅ | HIGH | Tested - returns 15/page |
-| Update | PATCH | `/leads/{id}` | ⏳ | HIGH | Field order fixed |
+| Create | POST | `/leads` | ✅ | HIGH | Tested - two-step process with tags |
+| Get | GET | `/leads/{id}` | ✅ | HIGH | Tested - dropdown working |
+| Get Many | GET | `/leads` | ✅ | HIGH | **API Limitation**: Hard limit of 15 items (no pagination) |
+| Update | PATCH | `/leads/{id}` | ✅ | HIGH | Tested - name/company work; phone/email/custom_fields unverified |
 | Delete | DELETE | `/leads/{id}` | ⏳ | MEDIUM | |
-| Attach Tags | POST | `/leads/attach-tags` | ⏳ | MEDIUM | Bulk operation |
+| Attach Tags | POST | `/tags/attach-to-leads` | ✅ | MEDIUM | Bulk operation - Enhanced with dynamic dropdowns |
 
 **Known Issues:**
-- Pagination: API returns 15 leads per page (ignores limit parameter)
-- Total leads: 4,024 across 269 pages
+- **Pagination**: API returns 15 leads per page (ignores limit parameter)
+- **Total leads**: 4,024 across 269 pages
+- **Update Lead Response**: API response doesn't include all updated fields
+  - ✅ Confirmed working: `first_name`, `last_name`, `company`
+  - ❓ Unverified (not in response): `phone`, `email`
+  - ❌ Not appearing in response: `custom_fields`
+  - **Recommendation**: Add follow-up GET request to verify all fields updated
 
 ---
 
@@ -182,14 +195,15 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
-| Create | POST | `/campaigns` | ⏳ | HIGH | Core functionality |
+| Create | POST | `/campaigns` | ✅ | HIGH | Tested - working perfectly |
 | Get | GET | `/campaigns/{id}` | ⏳ | HIGH | Core functionality |
 | Get Many | GET | `/campaigns` | ⏳ | HIGH | List all campaigns |
 | Update | PATCH | `/campaigns/{id}` | ⏳ | HIGH | |
-| Delete | DELETE | `/campaigns/{id}` | ⏳ | MEDIUM | |
+| ~~Delete~~ | ~~DELETE~~ | ~~`/campaigns/{id}`~~ | ❌ | N/A | **NOT SUPPORTED BY API** - Endpoint does not exist |
 | Start | POST | `/campaigns/{id}/start` | ⏳ | HIGH | Critical for automation |
 | Stop | POST | `/campaigns/{id}/stop` | ⏳ | HIGH | Critical for automation |
 | Pause | POST | `/campaigns/{id}/pause` | ⏳ | MEDIUM | |
+| Add Sequence Step | POST | `/campaigns/v1.1/{id}/sequence-steps` | ✅ | HIGH | Tested - working perfectly |
 
 ---
 
@@ -260,7 +274,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 |-----------|--------|----------|--------|----------|-------|
 | Get Many | GET | `/sequence-steps` | ⏳ | MEDIUM | View campaign steps |
 | Send Test Email | POST | `/sequence-steps/{id}/send-test` | ⏳ | HIGH | Testing before launch |
-| Delete | DELETE | `/sequence-steps/{id}` | ⏳ | LOW | |
+| Delete | DELETE | `/sequence-steps/{id}` | ✅ | LOW | Tested - working |
 
 ---
 
@@ -289,7 +303,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ### SHOULD HAVE (Important but not blocking)
 1. **Leads:** Delete, Attach Tags
-2. **Campaigns:** Update, Delete, Pause
+2. **Campaigns:** Update, Pause (Delete not supported by API)
 3. **Tags:** Update, Attach to Leads
 4. **Webhooks:** Create, Get Many, Delete
 

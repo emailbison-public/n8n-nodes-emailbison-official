@@ -19,12 +19,6 @@ export const campaignOperations: INodeProperties[] = [
 				action: 'Create a campaign',
 			},
 			{
-				name: 'Delete',
-				value: 'delete',
-				description: 'Delete a campaign',
-				action: 'Delete a campaign',
-			},
-			{
 				name: 'Get',
 				value: 'get',
 				description: 'Get a campaign by ID',
@@ -230,7 +224,7 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['get', 'update', 'delete', 'start', 'stop', 'pause', 'addLeads'],
+				operation: ['get', 'update', 'start', 'stop', 'pause', 'addLeads'],
 			},
 		},
 		default: '',
