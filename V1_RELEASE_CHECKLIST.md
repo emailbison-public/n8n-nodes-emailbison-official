@@ -167,7 +167,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 7a. Get Email Account | ✅ | PASS | Retrieves single email account details successfully |
 | 7b. Get Many Email Accounts | ✅ | PASS | Returns list of email accounts successfully |
 | 7c. Create Email Account | ✅ | VERIFIED | API endpoint verified correct, field validation fixed (cannot fully test without email credentials) |
-| 7d. Update Email Account | ✅ | VERIFIED | API endpoint verified correct, field order fixed, all fields optional |
+| 7d. Update Email Account | ✅ | PASS | Successfully updates individual fields (name, daily_limit, etc.) - fetches current data and merges updates |
 | 7e. Delete Email Account | ✅ | VERIFIED | Implementation verified correct - uses DELETE /sender-emails/{id}, follows established pattern |
 | 8. Compose Email | ⏳ | - | |
 
@@ -233,7 +233,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ---
 
-### ✅ 4. EMAIL ACCOUNTS (5 operations - 2 TESTED ✅, 3 VERIFIED ✅, 0 UNTESTED ⏳)
+### ✅ 4. EMAIL ACCOUNTS (5 operations - 3 TESTED ✅, 2 VERIFIED ✅, 0 UNTESTED ⏳)
 **Endpoint:** `/api/sender-emails`
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
@@ -241,7 +241,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | Create | POST | `/sender-emails` | ✅ | HIGH | Verified - API endpoint correct, field validation fixed |
 | Get | GET | `/sender-emails/{id}` | ✅ | MEDIUM | Tested - working perfectly, retrieves single email account |
 | Get Many | GET | `/sender-emails` | ✅ | HIGH | Tested - working perfectly, returns email account list |
-| Update | PATCH | `/sender-emails/{id}` | ✅ | MEDIUM | Verified - API correct, field order fixed, all fields optional |
+| Update | PATCH | `/sender-emails/{id}` | ✅ | MEDIUM | Tested - successfully updates individual fields, fetches current data and merges updates |
 | Delete | DELETE | `/sender-emails/{id}` | ✅ | LOW | Verified - implementation correct, follows established DELETE pattern |
 
 ---

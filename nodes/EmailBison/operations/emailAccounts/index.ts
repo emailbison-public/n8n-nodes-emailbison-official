@@ -168,7 +168,7 @@ export const emailAccountFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		default: 500,
+		default: 30,
 		description: 'Maximum number of emails to send per day',
 	},
 
@@ -285,7 +285,7 @@ export const emailAccountFields: INodeProperties[] = [
 				displayName: 'Daily Send Limit',
 				name: 'dailySendLimit',
 				type: 'number',
-				default: 500,
+				default: 30,
 				description: 'Maximum number of emails to send per day',
 			},
 		],
