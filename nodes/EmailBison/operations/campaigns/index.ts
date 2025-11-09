@@ -37,22 +37,16 @@ export const campaignOperations: INodeProperties[] = [
 				action: 'Update a campaign',
 			},
 			{
-				name: 'Start',
-				value: 'start',
-				description: 'Start a campaign',
-				action: 'Start a campaign',
+				name: 'Start/Resume',
+				value: 'resume',
+				description: 'Start or resume a campaign',
+				action: 'Start/Resume a campaign',
 			},
 			{
-				name: 'Stop',
-				value: 'stop',
-				description: 'Stop a campaign',
-				action: 'Stop a campaign',
-			},
-			{
-				name: 'Pause',
+				name: 'Stop/Pause',
 				value: 'pause',
-				description: 'Pause a campaign',
-				action: 'Pause a campaign',
+				description: 'Stop or pause a campaign',
+				action: 'Stop/Pause a campaign',
 			},
 			{
 				name: 'Add Leads',
@@ -106,6 +100,21 @@ export const campaignFields: INodeProperties[] = [
 		description: 'The campaign to update. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 
+	// Update operation - Name field
+	{
+		displayName: 'Name',
+		name: 'name',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['update'],
+			},
+		},
+		default: '',
+		description: 'New name for the campaign (leave empty to keep current name)',
+	},
+
 	{
 		displayName: 'Subject',
 		name: 'subject',
@@ -113,7 +122,7 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		default: '',
@@ -129,7 +138,7 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		default: '',
@@ -145,11 +154,27 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		default: [],
 		description: 'The email accounts to send from. Select one or multiple email accounts. Choose from the list, or specify IDs using an expression.',
+	},
+	{
+		displayName: 'Sender Emails',
+		name: 'senderEmails',
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getSenderEmails',
+		},
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['update'],
+			},
+		},
+		default: [],
+		description: 'The email accounts to send from (leave empty to keep current sender emails). Choose from the list, or specify IDs using an expression.',
 	},
 	{
 		displayName: 'From Name',
@@ -244,7 +269,7 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['get', 'start', 'stop', 'pause', 'addLeads'],
+				operation: ['get', 'resume', 'pause', 'addLeads'],
 			},
 		},
 		default: '',
@@ -264,7 +289,8 @@ export const campaignFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Comma-separated list of lead IDs to add to the campaign',
+		description: 'Lead IDs to add to the campaign. Accepts: comma-separated string (e.g., "33500,33501,33502"), single ID (e.g., "33500"), or expression that returns number/array.',
+		placeholder: '33500,33501,33502',
 	},
 
 	// Get Many operation fields

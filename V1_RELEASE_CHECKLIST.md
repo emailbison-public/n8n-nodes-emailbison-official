@@ -160,7 +160,13 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 4c. Delete Sequence Step | ✅ | PASS | Sequence steps deleted successfully |
 | 5. Get Campaign | ✅ | PASS | Campaign dropdown working, returns full campaign data - UI validation fixed |
 | 6. Get Many Campaigns | ✅ | PASS | Returns list of campaigns successfully |
-| 7. Compose Email | ⏳ | - | |
+| 6b. Update Campaign | ✅ | PASS | Name and sender emails update working - verified in platform |
+| 6c. Add Leads to Campaign | ✅ | PASS | Bulk operation working - processes all input items correctly with "Execute Once" mode |
+| 6d. Start/Resume Campaign | ✅ | PASS | Starts or resumes campaigns successfully using PATCH /campaigns/{id}/resume |
+| 6e. Stop/Pause Campaign | ✅ | PASS | Pauses campaigns successfully using PATCH /campaigns/{id}/pause |
+| 7. Get Many Email Accounts | ✅ | PASS | Returns list of email accounts successfully |
+| 7b. Create Email Account | ✅ | VERIFIED | API endpoint verified correct, field validation fixed (cannot fully test without email credentials) |
+| 8. Compose Email | ⏳ | - | |
 
 **Overall Status:** ⏳ TESTING IN PROGRESS
 
@@ -168,7 +174,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ## 📋 Resources & Operations Summary
 
-### ✅ 1. LEADS (6 operations)
+### ✅ 1. LEADS (5 operations - ALL TESTED ✅)
 **Endpoint:** `/api/leads`
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
@@ -177,8 +183,8 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | Get | GET | `/leads/{id}` | ✅ | HIGH | Tested - dropdown working |
 | Get Many | GET | `/leads` | ✅ | HIGH | **API Limitation**: Hard limit of 15 items (no pagination) |
 | Update | PATCH | `/leads/{id}` | ✅ | HIGH | Tested - name/company work; phone/email/custom_fields unverified |
-| Delete | DELETE | `/leads/{id}` | ⏳ | MEDIUM | |
-| Attach Tags | POST | `/tags/attach-to-leads` | ✅ | MEDIUM | Bulk operation - Enhanced with dynamic dropdowns |
+| Attach Tags | POST | `/tags/attach-to-leads` | ✅ | MEDIUM | Tested - Bulk operation with dynamic dropdowns |
+| ~~Delete~~ | ~~DELETE~~ | ~~`/leads/{id}`~~ | ❌ | N/A | **NOT IMPLEMENTED** - Commented out in code (endpoint may not exist) |
 
 **Known Issues:**
 - **Pagination**: API returns 15 leads per page (ignores limit parameter)
@@ -191,20 +197,22 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ---
 
-### ✅ 2. CAMPAIGNS (7 operations)
+### ✅ 2. CAMPAIGNS (9 operations - 8 TESTED ✅, 0 UNTESTED ⏳, 1 NOT SUPPORTED ❌)
 **Endpoint:** `/api/campaigns`
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
-| Create | POST | `/campaigns` | ✅ | HIGH | Tested - working perfectly |
+| Create | POST | `/campaigns` | ✅ | HIGH | Tested - three-step process working perfectly |
 | Get | GET | `/campaigns/{id}` | ✅ | HIGH | Tested - working perfectly, UI validation fixed |
 | Get Many | GET | `/campaigns` | ✅ | HIGH | Tested - working perfectly, returns campaign list |
-| Update | PATCH | `/campaigns/{id}` | ⏳ | HIGH | |
-| ~~Delete~~ | ~~DELETE~~ | ~~`/campaigns/{id}`~~ | ❌ | N/A | **NOT SUPPORTED BY API** - Endpoint does not exist |
-| Start | POST | `/campaigns/{id}/start` | ⏳ | HIGH | Critical for automation |
-| Stop | POST | `/campaigns/{id}/stop` | ⏳ | HIGH | Critical for automation |
-| Pause | POST | `/campaigns/{id}/pause` | ⏳ | MEDIUM | |
+| Update | PATCH | `/campaigns/{id}/update` | ✅ | HIGH | Tested - name & sender emails update working (verified in platform) |
 | Add Sequence Step | POST | `/campaigns/v1.1/{id}/sequence-steps` | ✅ | HIGH | Tested - working perfectly |
+| Add Leads | POST | `/campaigns/{id}/leads/attach-leads` | ✅ | HIGH | Tested - bulk operation working with "Execute Once" mode |
+| Start/Resume | PATCH | `/campaigns/{id}/resume` | ✅ | HIGH | Tested - starts or resumes campaigns successfully |
+| Stop/Pause | PATCH | `/campaigns/{id}/pause` | ✅ | HIGH | Tested - pauses campaigns successfully, returns full campaign data |
+| ~~Delete~~ | ~~DELETE~~ | ~~`/campaigns/{id}`~~ | ❌ | N/A | **NOT SUPPORTED BY API** - Endpoint does not exist |
+- **Stop/Pause Campaign**: Likely have same issue as Start operation
+- **Delete Campaign**: Confirmed NOT supported by API
 
 ---
 
@@ -222,16 +230,16 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ---
 
-### ✅ 4. EMAIL ACCOUNTS (5 operations)
-**Endpoint:** `/api/email-accounts`
+### ✅ 4. EMAIL ACCOUNTS (5 operations - 1 TESTED ✅, 1 VERIFIED ✅, 3 UNTESTED ⏳)
+**Endpoint:** `/api/sender-emails`
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
-| Create | POST | `/email-accounts` | ⏳ | HIGH | Core functionality |
-| Get | GET | `/email-accounts/{id}` | ⏳ | MEDIUM | |
-| Get Many | GET | `/email-accounts` | ⏳ | HIGH | For dropdown |
-| Update | PATCH | `/email-accounts/{id}` | ⏳ | MEDIUM | |
-| Delete | DELETE | `/email-accounts/{id}` | ⏳ | LOW | |
+| Create | POST | `/sender-emails` | ✅ | HIGH | Verified - API endpoint correct, field validation fixed |
+| Get | GET | `/sender-emails/{id}` | ⏳ | MEDIUM | |
+| Get Many | GET | `/sender-emails` | ✅ | HIGH | Tested - working perfectly, returns email account list |
+| Update | PATCH | `/sender-emails/{id}` | ⏳ | MEDIUM | |
+| Delete | DELETE | `/sender-emails/{id}` | ⏳ | LOW | |
 
 ---
 

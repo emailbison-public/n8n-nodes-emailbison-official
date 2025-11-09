@@ -207,8 +207,7 @@ export async function executeCampaignOperation(
 			throw new Error('Please select a campaign to update');
 		}
 
-		const subject = this.getNodeParameter('subject', index, '') as string;
-		const emailContent = this.getNodeParameter('emailContent', index, '') as string;
+		const name = this.getNodeParameter('name', index, '') as string;
 		const fromName = this.getNodeParameter('fromName', index, '') as string;
 		const replyTo = this.getNodeParameter('replyTo', index, '') as string;
 		const scheduleType = this.getNodeParameter('scheduleType', index, 'now') as string;
@@ -240,8 +239,9 @@ export async function executeCampaignOperation(
 
 		const body: IDataObject = {};
 
-		if (subject) body.subject = subject;
-		if (emailContent) body.html_content = emailContent;
+		// Only include fields that are actually set (campaigns only support: name, from_name, reply_to, scheduled_at, tags)
+		// Note: subject and email_content belong to sequence steps, not campaigns
+		if (name) body.name = name;
 		if (fromName) body.from_name = fromName;
 		if (replyTo) body.reply_to = replyTo;
 		if (scheduleType === 'scheduled' && scheduledDate) {
@@ -251,6 +251,8 @@ export async function executeCampaignOperation(
 			body.tags = tags;
 		}
 
+		console.log(`🔍 Campaign Update - ID: ${campaignId}, Body:`, JSON.stringify(body, null, 2));
+
 		// Step 1: Update the campaign
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
@@ -258,10 +260,12 @@ export async function executeCampaignOperation(
 			{
 				method: 'PATCH',
 				baseURL: `${credentials.serverUrl}/api`,
-				url: `/campaigns/${campaignId}`,
+				url: `/campaigns/${campaignId}/update`,
 				body,
 			},
 		);
+
+		console.log(`✅ Campaign Update Response:`, JSON.stringify(responseData, null, 2));
 
 		// Step 2: Attach sender emails to the campaign (if any were provided)
 		if (senderEmails.length > 0) {
@@ -288,53 +292,44 @@ export async function executeCampaignOperation(
 		return [{ json: responseData.data || responseData }];
 	}
 
-	if (operation === 'start') {
-		// Start campaign
+	if (operation === 'resume') {
+		// Start/Resume campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
+
+		console.log(`🔍 START/RESUME CAMPAIGN - Campaign ID: ${campaignId}`);
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
 			{
-				method: 'POST',
+				method: 'PATCH',
 				baseURL: `${credentials.serverUrl}/api`,
-				url: `/campaigns/${campaignId}/start`,
+				url: `/campaigns/${campaignId}/resume`,
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
-	}
-
-	if (operation === 'stop') {
-		// Stop campaign
-		const campaignId = this.getNodeParameter('campaignId', index) as string;
-
-		const responseData = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'POST',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: `/campaigns/${campaignId}/stop`,
-			},
-		);
+		console.log('✅ START/RESUME CAMPAIGN - Response:', JSON.stringify(responseData, null, 2));
 
 		return [{ json: responseData.data || responseData }];
 	}
 
 	if (operation === 'pause') {
-		// Pause campaign
+		// Stop/Pause campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
+
+		console.log(`🔍 STOP/PAUSE CAMPAIGN - Campaign ID: ${campaignId}`);
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
 			{
-				method: 'POST',
+				method: 'PATCH',
 				baseURL: `${credentials.serverUrl}/api`,
 				url: `/campaigns/${campaignId}/pause`,
 			},
 		);
+
+		console.log('✅ STOP/PAUSE CAMPAIGN - Response:', JSON.stringify(responseData, null, 2));
 
 		return [{ json: responseData.data || responseData }];
 	}
@@ -342,10 +337,37 @@ export async function executeCampaignOperation(
 	if (operation === 'addLeads') {
 		// Add leads to campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
-		const leadIds = this.getNodeParameter('leadIds', index) as string;
+		const leadIdsInput = this.getNodeParameter('leadIds', index) as string | string[] | number | number[];
+
+		// Handle different input types: string, array, or single number
+		let leadIdsArray: number[] = [];
+
+		if (typeof leadIdsInput === 'string') {
+			// Comma-separated string: "33500,33501,33502"
+			leadIdsArray = leadIdsInput.split(',').map((id: string) => parseInt(id.trim(), 10));
+		} else if (Array.isArray(leadIdsInput)) {
+			// Array of strings or numbers: [33500, 33501] or ["33500", "33501"]
+			leadIdsArray = leadIdsInput.map((id: string | number) =>
+				typeof id === 'number' ? id : parseInt(id.toString().trim(), 10)
+			);
+		} else if (typeof leadIdsInput === 'number') {
+			// Single number: 33500
+			leadIdsArray = [leadIdsInput];
+		} else {
+			throw new Error('Lead IDs must be provided as a comma-separated string, array, or single number');
+		}
+
+		// Filter out any NaN values
+		leadIdsArray = leadIdsArray.filter((id) => !isNaN(id));
+
+		if (leadIdsArray.length === 0) {
+			throw new Error('No valid lead IDs provided');
+		}
+
+		console.log(`🔍 ADD LEADS TO CAMPAIGN - Campaign ID: ${campaignId}, Lead IDs:`, leadIdsArray);
 
 		const body: IDataObject = {
-			lead_ids: leadIds.split(',').map((id: string) => id.trim()),
+			lead_ids: leadIdsArray,
 		};
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -354,10 +376,12 @@ export async function executeCampaignOperation(
 			{
 				method: 'POST',
 				baseURL: `${credentials.serverUrl}/api`,
-				url: `/campaigns/${campaignId}/leads`,
+				url: `/campaigns/${campaignId}/leads/attach-leads`,
 				body,
 			},
 		);
+
+		console.log('✅ ADD LEADS TO CAMPAIGN - Response:', JSON.stringify(responseData, null, 2));
 
 		return [{ json: responseData.data || responseData }];
 	}

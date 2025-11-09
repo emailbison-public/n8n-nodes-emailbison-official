@@ -54,7 +54,6 @@ export const emailAccountFields: INodeProperties[] = [
 		name: 'email',
 		type: 'string',
 		placeholder: 'sender@yourdomain.com',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
@@ -62,17 +61,126 @@ export const emailAccountFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Email address for the sender account',
+		description: 'Email address for the sender account (required)',
 	},
 	{
 		displayName: 'Name',
 		name: 'name',
 		type: 'string',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description: 'Display name for the sender (required)',
+	},
+	{
+		displayName: 'SMTP Host',
+		name: 'smtpHost',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description: 'SMTP server hostname (required)',
+	},
+	{
+		displayName: 'SMTP Port',
+		name: 'smtpPort',
+		type: 'number',
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['create'],
+			},
+		},
+		default: 587,
+		description: 'SMTP server port (required)',
+	},
+	{
+		displayName: 'SMTP Username',
+		name: 'smtpUsername',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description: 'SMTP authentication username (required)',
+	},
+	{
+		displayName: 'SMTP Password',
+		name: 'smtpPassword',
+		type: 'string',
+		typeOptions: {
+			password: true,
+		},
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description: 'SMTP authentication password (required)',
+	},
+	{
+		displayName: 'SMTP Security',
+		name: 'smtpSecurity',
+		type: 'options',
+		options: [
+			{
+				name: 'None',
+				value: 'none',
+			},
+			{
+				name: 'TLS',
+				value: 'tls',
+			},
+			{
+				name: 'SSL',
+				value: 'ssl',
+			},
+		],
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['create'],
+			},
+		},
+		default: 'tls',
+		description: 'SMTP security protocol',
+	},
+	{
+		displayName: 'Daily Send Limit',
+		name: 'dailySendLimit',
+		type: 'number',
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['create'],
+			},
+		},
+		default: 500,
+		description: 'Maximum number of emails to send per day',
+	},
+
+	// Update operation fields (optional)
+	{
+		displayName: 'Name',
+		name: 'name',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['update'],
 			},
 		},
 		default: '',
@@ -82,11 +190,10 @@ export const emailAccountFields: INodeProperties[] = [
 		displayName: 'SMTP Host',
 		name: 'smtpHost',
 		type: 'string',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['update'],
 			},
 		},
 		default: '',
@@ -96,11 +203,10 @@ export const emailAccountFields: INodeProperties[] = [
 		displayName: 'SMTP Port',
 		name: 'smtpPort',
 		type: 'number',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['update'],
 			},
 		},
 		default: 587,
@@ -110,11 +216,10 @@ export const emailAccountFields: INodeProperties[] = [
 		displayName: 'SMTP Username',
 		name: 'smtpUsername',
 		type: 'string',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['update'],
 			},
 		},
 		default: '',
@@ -127,11 +232,10 @@ export const emailAccountFields: INodeProperties[] = [
 		typeOptions: {
 			password: true,
 		},
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['update'],
 			},
 		},
 		default: '',
@@ -158,7 +262,7 @@ export const emailAccountFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['update'],
 			},
 		},
 		default: 'tls',
@@ -171,7 +275,7 @@ export const emailAccountFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
-				operation: ['create', 'update'],
+				operation: ['update'],
 			},
 		},
 		default: 500,

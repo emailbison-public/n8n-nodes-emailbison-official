@@ -24,12 +24,18 @@ export const tagOperations: INodeProperties[] = [
 				description: 'Delete a tag',
 				action: 'Delete a tag',
 			},
-			{
-				name: 'Get',
-				value: 'get',
-				description: 'Get a tag by ID',
-				action: 'Get a tag',
-			},
+			// DISABLED 2025-10-27: API Bug - Returns 403 Forbidden
+			// See GET_OPERATIONS_TEST_RESULTS.md for details
+			// The GET /api/tags/{id} endpoint has an authorization bug that returns:
+			// "This action is unauthorized. The api key does not match the workspace the record is on."
+			// Even though GET Many Tags works and returns the same tag IDs.
+			// Re-enable when EmailBison API fixes this endpoint.
+			// {
+			// 	name: 'Get',
+			// 	value: 'get',
+			// 	description: 'Get a tag by ID',
+			// 	action: 'Get a tag',
+			// },
 			{
 				name: 'Get Many',
 				value: 'getMany',
@@ -79,6 +85,7 @@ export const tagOperations: INodeProperties[] = [
 
 export const tagFields: INodeProperties[] = [
 	// Get/Delete operation fields - Tag selector (must come FIRST)
+	// DISABLED 2025-10-27: 'get' operation removed due to API bug (see index.ts line 21)
 	{
 		displayName: 'Tag',
 		name: 'tagId',
@@ -90,7 +97,7 @@ export const tagFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['tag'],
-				operation: ['get', 'delete'],
+				operation: ['delete'], // Removed 'get' - API bug
 			},
 		},
 		default: '',

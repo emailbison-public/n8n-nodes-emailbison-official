@@ -12,12 +12,19 @@ export const sequenceStepOperations: INodeProperties[] = [
 			},
 		},
 		options: [
-			{
-				name: 'Get Many',
-				value: 'getMany',
-				description: 'Get multiple sequence steps',
-				action: 'Get many sequence steps',
-			},
+			// DISABLED 2025-10-27: Endpoint Issue - Returns "Record not found"
+			// See GET_OPERATIONS_TEST_RESULTS.md for details
+			// The GET /api/campaigns/sequence-steps endpoint returns:
+			// "Record not found" with {"campaign": "sequence-steps"}
+			// Even when tested with valid campaign IDs.
+			// This appears to be an API routing bug or incorrect endpoint structure.
+			// Re-enable when EmailBison API clarifies the correct endpoint.
+			// {
+			// 	name: 'Get Many',
+			// 	value: 'getMany',
+			// 	description: 'Get multiple sequence steps',
+			// 	action: 'Get many sequence steps',
+			// },
 			{
 				name: 'Send Test Email',
 				value: 'sendTest',
@@ -31,65 +38,66 @@ export const sequenceStepOperations: INodeProperties[] = [
 				action: 'Delete a sequence step',
 			},
 		],
-		default: 'getMany',
+		default: 'sendTest', // Changed from 'getMany' since that's disabled
 	},
 ];
 
 export const sequenceStepFields: INodeProperties[] = [
 	// Get Many operation fields
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: ['sequenceStep'],
-				operation: ['getMany'],
-			},
-		},
-		default: false,
-		description: 'Whether to return all results or only up to a given limit',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: ['sequenceStep'],
-				operation: ['getMany'],
-				returnAll: [false],
-			},
-		},
-		typeOptions: {
-			minValue: 1,
-			maxValue: 100,
-		},
-		default: 50,
-		description: 'Max number of results to return',
-	},
-	{
-		displayName: 'Filters',
-		name: 'filters',
-		type: 'collection',
-		placeholder: 'Add Filter',
-		displayOptions: {
-			show: {
-				resource: ['sequenceStep'],
-				operation: ['getMany'],
-			},
-		},
-		default: {},
-		options: [
-			{
-				displayName: 'Campaign ID',
-				name: 'campaignId',
-				type: 'string',
-				default: '',
-				description: 'Filter by campaign ID',
-			},
-		],
-	},
+	// DISABLED 2025-10-27: Endpoint issue (see index.ts line 16)
+	// {
+	// 	displayName: 'Return All',
+	// 	name: 'returnAll',
+	// 	type: 'boolean',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: ['sequenceStep'],
+	// 			operation: ['getMany'],
+	// 		},
+	// 	},
+	// 	default: false,
+	// 	description: 'Whether to return all results or only up to a given limit',
+	// },
+	// {
+	// 	displayName: 'Limit',
+	// 	name: 'limit',
+	// 	type: 'number',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: ['sequenceStep'],
+	// 			operation: ['getMany'],
+	// 			returnAll: [false],
+	// 		},
+	// 	},
+	// 	typeOptions: {
+	// 		minValue: 1,
+	// 		maxValue: 100,
+	// 	},
+	// 	default: 50,
+	// 	description: 'Max number of results to return',
+	// },
+	// {
+	// 	displayName: 'Filters',
+	// 	name: 'filters',
+	// 	type: 'collection',
+	// 	placeholder: 'Add Filter',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: ['sequenceStep'],
+	// 			operation: ['getMany'],
+	// 		},
+	// 	},
+	// 	default: {},
+	// 	options: [
+	// 		{
+	// 			displayName: 'Campaign ID',
+	// 			name: 'campaignId',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'Filter by campaign ID',
+	// 		},
+	// 	],
+	// },
 
 	// Send Test Email operation fields
 	{

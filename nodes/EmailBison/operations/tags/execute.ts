@@ -30,21 +30,29 @@ export async function executeTagOperation(
 		return [{ json: responseData.data || responseData }];
 	}
 
-	if (operation === 'get') {
-		const tagId = this.getNodeParameter('tagId', index) as string;
+	// DISABLED 2025-10-27: API Bug - Returns 403 Forbidden
+	// See GET_OPERATIONS_TEST_RESULTS.md for details
+	// The GET /api/tags/{id} endpoint has an authorization bug that returns:
+	// "This action is unauthorized. The api key does not match the workspace the record is on."
+	// Even though GET Many Tags works and returns the same tag IDs.
+	// CLI Test: curl "https://send.topoffunnel.com/api/tags/12" returns 403
+	// But: curl "https://send.topoffunnel.com/api/tags" returns tag ID 12 successfully
+	// Re-enable when EmailBison API fixes this endpoint.
+	// if (operation === 'get') {
+	// 	const tagId = this.getNodeParameter('tagId', index) as string;
 
-		const responseData = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'GET',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: `/tags/${tagId}`,
-			},
-		);
+	// 	const responseData = await this.helpers.httpRequestWithAuthentication.call(
+	// 		this,
+	// 		'emailBisonApi',
+	// 		{
+	// 			method: 'GET',
+	// 			baseURL: `${credentials.serverUrl}/api`,
+	// 			url: `/tags/${tagId}`,
+	// 		},
+	// 	);
 
-		return [{ json: responseData.data || responseData }];
-	}
+	// 	return [{ json: responseData.data || responseData }];
+	// }
 
 	if (operation === 'getMany') {
 		const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;

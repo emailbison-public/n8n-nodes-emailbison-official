@@ -30,12 +30,18 @@ export const webhookOperations: INodeProperties[] = [
 				description: 'Get a webhook by ID',
 				action: 'Get a webhook',
 			},
-			{
-				name: 'Get Many',
-				value: 'getMany',
-				description: 'Get multiple webhooks',
-				action: 'Get many webhooks',
-			},
+			// DISABLED 2025-10-27: Endpoint Does Not Exist - Returns 404
+			// See GET_OPERATIONS_TEST_RESULTS.md for details
+			// The GET /api/webhooks endpoint does not exist in the EmailBison API.
+			// CLI Test: curl "https://send.topoffunnel.com/api/webhooks" returns:
+			// "The route api/webhooks could not be found."
+			// Re-enable when EmailBison API implements this endpoint.
+			// {
+			// 	name: 'Get Many',
+			// 	value: 'getMany',
+			// 	description: 'Get multiple webhooks',
+			// 	action: 'Get many webhooks',
+			// },
 			{
 				name: 'Update',
 				value: 'update',
@@ -158,35 +164,36 @@ export const webhookFields: INodeProperties[] = [
 	},
 
 	// Get Many operation fields
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: ['webhook'],
-				operation: ['getMany'],
-			},
-		},
-		default: false,
-		description: 'Whether to return all results or only up to a given limit',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: ['webhook'],
-				operation: ['getMany'],
-				returnAll: [false],
-			},
-		},
-		typeOptions: {
-			minValue: 1,
-			maxValue: 100,
-		},
-		default: 50,
-		description: 'Max number of results to return',
-	},
+	// DISABLED 2025-10-27: Endpoint does not exist (see index.ts line 33)
+	// {
+	// 	displayName: 'Return All',
+	// 	name: 'returnAll',
+	// 	type: 'boolean',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: ['webhook'],
+	// 			operation: ['getMany'],
+	// 		},
+	// 	},
+	// 	default: false,
+	// 	description: 'Whether to return all results or only up to a given limit',
+	// },
+	// {
+	// 	displayName: 'Limit',
+	// 	name: 'limit',
+	// 	type: 'number',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: ['webhook'],
+	// 			operation: ['getMany'],
+	// 			returnAll: [false],
+	// 		},
+	// 	},
+	// 	typeOptions: {
+	// 		minValue: 1,
+	// 		maxValue: 100,
+	// 	},
+	// 	default: 50,
+	// 	description: 'Max number of results to return',
+	// },
 ];
