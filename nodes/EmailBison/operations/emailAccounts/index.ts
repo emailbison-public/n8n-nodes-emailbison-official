@@ -286,7 +286,7 @@ export const emailAccountFields: INodeProperties[] = [
 				name: 'dailySendLimit',
 				type: 'number',
 				default: 30,
-				description: 'Maximum number of emails to send per day',
+				description: 'Max emails per day (recommended: 30 for cold email best practices)',
 			},
 		],
 	},
