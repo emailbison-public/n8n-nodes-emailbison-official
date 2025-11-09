@@ -91,16 +91,30 @@ export async function executeEmailAccountOperation(
 		const emailAccountId = this.getNodeParameter('emailAccountId', index) as string;
 		const updateFields = this.getNodeParameter('updateFields', index, {}) as IDataObject;
 
-		const body: IDataObject = {};
+		// First, get the current email account data
+		const currentData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/sender-emails/${emailAccountId}`,
+			},
+		);
 
-		// Map updateFields to API request body (camelCase to snake_case)
-		if (updateFields.name) body.name = updateFields.name;
-		if (updateFields.smtpHost) body.smtp_host = updateFields.smtpHost;
-		if (updateFields.smtpPort) body.smtp_port = updateFields.smtpPort;
-		if (updateFields.smtpUsername) body.smtp_username = updateFields.smtpUsername;
-		if (updateFields.smtpPassword) body.smtp_password = updateFields.smtpPassword;
-		if (updateFields.smtpSecurity) body.smtp_security = updateFields.smtpSecurity;
-		if (updateFields.dailySendLimit) body.daily_send_limit = updateFields.dailySendLimit;
+		// Extract current values from the response
+		const current = currentData.data || currentData;
+
+		// Build update body with current values as defaults, overridden by updateFields
+		const body: IDataObject = {
+			name: updateFields.name || current.name,
+			smtp_host: updateFields.smtpHost || current.smtp_host,
+			smtp_port: updateFields.smtpPort !== undefined ? updateFields.smtpPort : current.smtp_port,
+			smtp_username: updateFields.smtpUsername || current.smtp_username,
+			smtp_password: updateFields.smtpPassword || current.smtp_password,
+			smtp_security: updateFields.smtpSecurity || current.smtp_security,
+			daily_limit: updateFields.dailySendLimit !== undefined ? updateFields.dailySendLimit : current.daily_limit,
+		};
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
