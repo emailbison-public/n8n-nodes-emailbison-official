@@ -164,9 +164,11 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 6c. Add Leads to Campaign | ✅ | PASS | Bulk operation working - processes all input items correctly with "Execute Once" mode |
 | 6d. Start/Resume Campaign | ✅ | PASS | Starts or resumes campaigns successfully using PATCH /campaigns/{id}/resume |
 | 6e. Stop/Pause Campaign | ✅ | PASS | Pauses campaigns successfully using PATCH /campaigns/{id}/pause |
-| 7a. Get Many Email Accounts | ✅ | PASS | Returns list of email accounts successfully |
-| 7b. Create Email Account | ✅ | VERIFIED | API endpoint verified correct, field validation fixed (cannot fully test without email credentials) |
-| 7c. Delete Email Account | ✅ | VERIFIED | Implementation verified correct - uses DELETE /sender-emails/{id}, follows established pattern |
+| 7a. Get Email Account | ✅ | PASS | Retrieves single email account details successfully |
+| 7b. Get Many Email Accounts | ✅ | PASS | Returns list of email accounts successfully |
+| 7c. Create Email Account | ✅ | VERIFIED | API endpoint verified correct, field validation fixed (cannot fully test without email credentials) |
+| 7d. Update Email Account | ✅ | VERIFIED | API endpoint verified correct, field order fixed, all fields optional |
+| 7e. Delete Email Account | ✅ | VERIFIED | Implementation verified correct - uses DELETE /sender-emails/{id}, follows established pattern |
 | 8. Compose Email | ⏳ | - | |
 
 **Overall Status:** ⏳ TESTING IN PROGRESS
@@ -231,15 +233,15 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ---
 
-### ✅ 4. EMAIL ACCOUNTS (5 operations - 1 TESTED ✅, 2 VERIFIED ✅, 2 UNTESTED ⏳)
+### ✅ 4. EMAIL ACCOUNTS (5 operations - 2 TESTED ✅, 3 VERIFIED ✅, 0 UNTESTED ⏳)
 **Endpoint:** `/api/sender-emails`
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
 | Create | POST | `/sender-emails` | ✅ | HIGH | Verified - API endpoint correct, field validation fixed |
-| Get | GET | `/sender-emails/{id}` | ⏳ | MEDIUM | |
+| Get | GET | `/sender-emails/{id}` | ✅ | MEDIUM | Tested - working perfectly, retrieves single email account |
 | Get Many | GET | `/sender-emails` | ✅ | HIGH | Tested - working perfectly, returns email account list |
-| Update | PATCH | `/sender-emails/{id}` | ⏳ | MEDIUM | |
+| Update | PATCH | `/sender-emails/{id}` | ✅ | MEDIUM | Verified - API correct, field order fixed, all fields optional |
 | Delete | DELETE | `/sender-emails/{id}` | ✅ | LOW | Verified - implementation correct, follows established DELETE pattern |
 
 ---

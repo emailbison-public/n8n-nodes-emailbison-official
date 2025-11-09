@@ -172,7 +172,43 @@ export const emailAccountFields: INodeProperties[] = [
 		description: 'Maximum number of emails to send per day',
 	},
 
-	// Update operation fields (optional)
+	// Get/Delete operation fields - Email Account selector
+	{
+		displayName: 'Email Account',
+		name: 'emailAccountId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getSenderEmails',
+		},
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['get', 'delete'],
+			},
+		},
+		default: '',
+		description: 'The email account to work with. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+
+	// Update operation fields - Email Account selector appears FIRST
+	{
+		displayName: 'Email Account',
+		name: 'emailAccountId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getSenderEmails',
+		},
+		displayOptions: {
+			show: {
+				resource: ['emailAccount'],
+				operation: ['update'],
+			},
+		},
+		default: '',
+		description: 'The email account to update. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+
+	// Update operation fields (all optional)
 	{
 		displayName: 'Name',
 		name: 'name',
@@ -184,7 +220,7 @@ export const emailAccountFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Display name for the sender',
+		description: 'Display name for the sender (optional)',
 	},
 	{
 		displayName: 'SMTP Host',
@@ -197,7 +233,7 @@ export const emailAccountFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'SMTP server hostname',
+		description: 'SMTP server hostname (optional)',
 	},
 	{
 		displayName: 'SMTP Port',
@@ -209,8 +245,8 @@ export const emailAccountFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
-		default: 587,
-		description: 'SMTP server port',
+		default: 0,
+		description: 'SMTP server port (optional - leave as 0 to keep current value)',
 	},
 	{
 		displayName: 'SMTP Username',
@@ -223,7 +259,7 @@ export const emailAccountFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'SMTP authentication username',
+		description: 'SMTP authentication username (optional)',
 	},
 	{
 		displayName: 'SMTP Password',
@@ -239,7 +275,7 @@ export const emailAccountFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'SMTP authentication password',
+		description: 'SMTP authentication password (optional)',
 	},
 	{
 		displayName: 'SMTP Security',
@@ -265,8 +301,8 @@ export const emailAccountFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
-		default: 'tls',
-		description: 'SMTP security protocol',
+		default: '',
+		description: 'SMTP security protocol (optional - leave empty to keep current value)',
 	},
 	{
 		displayName: 'Daily Send Limit',
@@ -278,27 +314,8 @@ export const emailAccountFields: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
-		default: 500,
-		description: 'Maximum number of emails to send per day',
-	},
-
-	// Get/Update/Delete operation fields
-	{
-		displayName: 'Email Account',
-		name: 'emailAccountId',
-		type: 'options',
-		typeOptions: {
-			loadOptionsMethod: 'getSenderEmails',
-		},
-		required: true,
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['get', 'update', 'delete'],
-			},
-		},
-		default: '',
-		description: 'The email account to work with. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		default: 0,
+		description: 'Maximum number of emails to send per day (optional - leave as 0 to keep current value)',
 	},
 
 	// Get Many operation fields
