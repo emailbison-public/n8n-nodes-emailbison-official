@@ -190,7 +190,7 @@ export const emailAccountFields: INodeProperties[] = [
 		description: 'The email account to work with. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 
-	// Update operation fields - Email Account selector appears FIRST
+	// Update operation - Email Account selector (appears FIRST)
 	{
 		displayName: 'Email Account',
 		name: 'emailAccountId',
@@ -208,114 +208,87 @@ export const emailAccountFields: INodeProperties[] = [
 		description: 'The email account to update. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 
-	// Update operation fields (all optional)
+	// Update operation - Additional Fields (optional fields pattern)
 	{
-		displayName: 'Name',
-		name: 'name',
-		type: 'string',
+		displayName: 'Update Fields',
+		name: 'updateFields',
+		type: 'collection',
+		placeholder: 'Add Field',
+		default: {},
 		displayOptions: {
 			show: {
 				resource: ['emailAccount'],
 				operation: ['update'],
 			},
 		},
-		default: '',
-		description: 'Display name for the sender (optional)',
-	},
-	{
-		displayName: 'SMTP Host',
-		name: 'smtpHost',
-		type: 'string',
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['update'],
-			},
-		},
-		default: '',
-		description: 'SMTP server hostname (optional)',
-	},
-	{
-		displayName: 'SMTP Port',
-		name: 'smtpPort',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['update'],
-			},
-		},
-		default: 0,
-		description: 'SMTP server port (optional - leave as 0 to keep current value)',
-	},
-	{
-		displayName: 'SMTP Username',
-		name: 'smtpUsername',
-		type: 'string',
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['update'],
-			},
-		},
-		default: '',
-		description: 'SMTP authentication username (optional)',
-	},
-	{
-		displayName: 'SMTP Password',
-		name: 'smtpPassword',
-		type: 'string',
-		typeOptions: {
-			password: true,
-		},
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['update'],
-			},
-		},
-		default: '',
-		description: 'SMTP authentication password (optional)',
-	},
-	{
-		displayName: 'SMTP Security',
-		name: 'smtpSecurity',
-		type: 'options',
 		options: [
 			{
-				name: 'None',
-				value: 'none',
+				displayName: 'Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'Display name for the sender',
 			},
 			{
-				name: 'TLS',
-				value: 'tls',
+				displayName: 'SMTP Host',
+				name: 'smtpHost',
+				type: 'string',
+				default: '',
+				description: 'SMTP server hostname',
 			},
 			{
-				name: 'SSL',
-				value: 'ssl',
+				displayName: 'SMTP Port',
+				name: 'smtpPort',
+				type: 'number',
+				default: 587,
+				description: 'SMTP server port',
+			},
+			{
+				displayName: 'SMTP Username',
+				name: 'smtpUsername',
+				type: 'string',
+				default: '',
+				description: 'SMTP authentication username',
+			},
+			{
+				displayName: 'SMTP Password',
+				name: 'smtpPassword',
+				type: 'string',
+				typeOptions: {
+					password: true,
+				},
+				default: '',
+				description: 'SMTP authentication password',
+			},
+			{
+				displayName: 'SMTP Security',
+				name: 'smtpSecurity',
+				type: 'options',
+				options: [
+					{
+						name: 'None',
+						value: 'none',
+					},
+					{
+						name: 'TLS',
+						value: 'tls',
+					},
+					{
+						name: 'SSL',
+						value: 'ssl',
+					},
+				],
+				default: 'tls',
+				description: 'SMTP security protocol',
+			},
+			{
+				displayName: 'Daily Send Limit',
+				name: 'dailySendLimit',
+				type: 'number',
+				default: 500,
+				description: 'Maximum number of emails to send per day',
 			},
 		],
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['update'],
-			},
-		},
-		default: '',
-		description: 'SMTP security protocol (optional - leave empty to keep current value)',
-	},
-	{
-		displayName: 'Daily Send Limit',
-		name: 'dailySendLimit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: ['emailAccount'],
-				operation: ['update'],
-			},
-		},
-		default: 0,
-		description: 'Maximum number of emails to send per day (optional - leave as 0 to keep current value)',
 	},
 
 	// Get Many operation fields

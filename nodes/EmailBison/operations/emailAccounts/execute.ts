@@ -89,23 +89,18 @@ export async function executeEmailAccountOperation(
 	if (operation === 'update') {
 		// Update email account
 		const emailAccountId = this.getNodeParameter('emailAccountId', index) as string;
-		const name = this.getNodeParameter('name', index, '') as string;
-		const smtpHost = this.getNodeParameter('smtpHost', index, '') as string;
-		const smtpPort = this.getNodeParameter('smtpPort', index, 0) as number;
-		const smtpUsername = this.getNodeParameter('smtpUsername', index, '') as string;
-		const smtpPassword = this.getNodeParameter('smtpPassword', index, '') as string;
-		const smtpSecurity = this.getNodeParameter('smtpSecurity', index, '') as string;
-		const dailySendLimit = this.getNodeParameter('dailySendLimit', index, 0) as number;
+		const updateFields = this.getNodeParameter('updateFields', index, {}) as IDataObject;
 
 		const body: IDataObject = {};
 
-		if (name) body.name = name;
-		if (smtpHost) body.smtp_host = smtpHost;
-		if (smtpPort) body.smtp_port = smtpPort;
-		if (smtpUsername) body.smtp_username = smtpUsername;
-		if (smtpPassword) body.smtp_password = smtpPassword;
-		if (smtpSecurity) body.smtp_security = smtpSecurity;
-		if (dailySendLimit) body.daily_send_limit = dailySendLimit;
+		// Map updateFields to API request body (camelCase to snake_case)
+		if (updateFields.name) body.name = updateFields.name;
+		if (updateFields.smtpHost) body.smtp_host = updateFields.smtpHost;
+		if (updateFields.smtpPort) body.smtp_port = updateFields.smtpPort;
+		if (updateFields.smtpUsername) body.smtp_username = updateFields.smtpUsername;
+		if (updateFields.smtpPassword) body.smtp_password = updateFields.smtpPassword;
+		if (updateFields.smtpSecurity) body.smtp_security = updateFields.smtpSecurity;
+		if (updateFields.dailySendLimit) body.daily_send_limit = updateFields.dailySendLimit;
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
