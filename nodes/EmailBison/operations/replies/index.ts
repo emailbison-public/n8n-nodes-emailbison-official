@@ -289,7 +289,7 @@ export const replyFields: INodeProperties[] = [
 			},
 			{
 				displayName: 'Lead ID',
-				name: 'leadId',
+				name: 'lead_id',
 				type: 'string',
 				default: '',
 				description: 'Filter by lead ID',

@@ -79,7 +79,7 @@ export async function executeReplyOperation(
 
 		// Add filters to query string
 		if (filters.campaignId) qs.campaign_id = filters.campaignId;
-		if (filters.leadId) qs.lead_id = filters.leadId;
+		if (filters.lead_id) qs.lead_id = filters.lead_id;
 		if (filters.status) qs.status = filters.status;
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(

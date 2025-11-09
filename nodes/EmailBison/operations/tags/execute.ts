@@ -96,11 +96,25 @@ export async function executeTagOperation(
 
 	if (operation === 'attachToLeads') {
 		const tagIds = this.getNodeParameter('tagIds', index) as string[];
-		const leadIds = this.getNodeParameter('leadIds', index) as string;
+		const leadIdsInput = this.getNodeParameter('leadIds', index) as string | string[] | number;
 		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
 
-		// Parse lead IDs (comma-separated string to array of integers)
-		const leadIdsArray = leadIds.split(',').map((id) => parseInt(id.trim(), 10));
+		// Parse lead IDs - handle string, array, or number input
+		let leadIdsArray: number[] = [];
+		if (typeof leadIdsInput === 'string') {
+			// Comma-separated string: "33500,33501,33502"
+			leadIdsArray = leadIdsInput.split(',').map((id) => parseInt(id.trim(), 10));
+		} else if (Array.isArray(leadIdsInput)) {
+			// Array of strings or numbers: [33500, 33501] or ["33500", "33501"]
+			leadIdsArray = leadIdsInput.map((id: string | number) =>
+				typeof id === 'number' ? id : parseInt(id.toString().trim(), 10)
+			);
+		} else if (typeof leadIdsInput === 'number') {
+			// Single number: 33500
+			leadIdsArray = [leadIdsInput];
+		} else {
+			throw new Error('Lead IDs must be provided as a comma-separated string, array, or single number');
+		}
 
 		const body: IDataObject = {
 			lead_ids: leadIdsArray,
@@ -127,11 +141,25 @@ export async function executeTagOperation(
 
 	if (operation === 'removeFromLeads') {
 		const tagIds = this.getNodeParameter('tagIds', index) as string[];
-		const leadIds = this.getNodeParameter('leadIds', index) as string;
+		const leadIdsInput = this.getNodeParameter('leadIds', index) as string | string[] | number;
 		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
 
-		// Parse lead IDs (comma-separated string to array of integers)
-		const leadIdsArray = leadIds.split(',').map((id) => parseInt(id.trim(), 10));
+		// Parse lead IDs - handle string, array, or number input
+		let leadIdsArray: number[] = [];
+		if (typeof leadIdsInput === 'string') {
+			// Comma-separated string: "33500,33501,33502"
+			leadIdsArray = leadIdsInput.split(',').map((id) => parseInt(id.trim(), 10));
+		} else if (Array.isArray(leadIdsInput)) {
+			// Array of strings or numbers: [33500, 33501] or ["33500", "33501"]
+			leadIdsArray = leadIdsInput.map((id: string | number) =>
+				typeof id === 'number' ? id : parseInt(id.toString().trim(), 10)
+			);
+		} else if (typeof leadIdsInput === 'number') {
+			// Single number: 33500
+			leadIdsArray = [leadIdsInput];
+		} else {
+			throw new Error('Lead IDs must be provided as a comma-separated string, array, or single number');
+		}
 
 		const body: IDataObject = {
 			lead_ids: leadIdsArray,
