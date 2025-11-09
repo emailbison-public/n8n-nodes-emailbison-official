@@ -12,6 +12,8 @@ export class EmailBisonApi implements ICredentialType {
 
   documentationUrl = 'https://docs.emailbison.com/get-started/authentication';
 
+  icon: 'file:emailbison.svg' = 'file:emailbison.svg';
+
   properties: INodeProperties[] = [
     {
       displayName: 'Server URL',
