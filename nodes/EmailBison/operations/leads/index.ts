@@ -47,8 +47,8 @@ export const leadOperations: INodeProperties[] = [
 			{
 				name: 'Attach Tags',
 				value: 'attachTags',
-				description: 'Attach tags to leads',
-				action: 'Attach tags to leads',
+				description: 'Attach tags to a lead',
+				action: 'Attach tags to a lead',
 			},
 		],
 		default: 'create',
