@@ -13,10 +13,10 @@ export const replyOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Compose Email',
+				name: 'Compose New Email',
 				value: 'compose',
 				description: 'Send a one-off email in a new email thread',
-				action: 'Compose and send email',
+				action: 'Compose new email',
 			},
 			{
 				name: 'Get Many',

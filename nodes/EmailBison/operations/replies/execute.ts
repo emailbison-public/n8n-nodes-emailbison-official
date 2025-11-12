@@ -30,7 +30,7 @@ export async function executeReplyOperation(
 					name: email.name || '',
 					email_address: email.emailAddress,
 				}))
-			: null;
+			: [];
 
 		// Format bcc_emails
 		const bccEmailsList = (bccEmails.values as IDataObject[])?.length
@@ -38,17 +38,18 @@ export async function executeReplyOperation(
 					name: email.name || '',
 					email_address: email.emailAddress,
 				}))
-			: null;
+			: [];
 
 		const body: IDataObject = {
-			sender_email_id: parseInt(senderEmailId, 10),
-			to_emails: toEmailsList,
 			subject: subject || null,
 			message,
+			sender_email_id: parseInt(senderEmailId, 10),
+			use_dedicated_ips: useDedicatedIps,
 			content_type: contentType,
+			to_emails: toEmailsList,
 			cc_emails: ccEmailsList,
 			bcc_emails: bccEmailsList,
-			use_dedicated_ips: useDedicatedIps,
+			attachments: [],
 		};
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(

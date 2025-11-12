@@ -122,27 +122,36 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ---
 
-### Test 6: Compose Email (Send One-off Email)
-**Status:** ⏳ NOT TESTED
+### Test 6: Compose New Email (Send One-off Email)
+**Status:** ✅ PASSED
 **Priority:** HIGH
 
 **Steps:**
 1. Add EmailBison node
 2. Select Resource: **Reply**
-3. Select Operation: **Compose Email**
+3. Select Operation: **Compose New Email**
 4. Fill in:
-   - Sender Email ID: `[your-email-account-id]`
-   - Recipient Email: `test@example.com`
-   - Subject: `Test from n8n`
-   - Body: `This is a test email sent via n8n`
+   - Sender Email ID: `2630` (from upstream node)
+   - To Emails: Name: `Brandon Charleson`, Email: `brandon@topoffunnel.com`
+   - Subject: `Test`
+   - Message: `Test`
 5. Execute node
 
 **Expected Result:**
 - ✅ No errors
 - ✅ Email sent successfully
-- ✅ Recipient receives email
+- ✅ Returns email data with ID
 
-**Actual Result:** _[Fill in after testing]_
+**Actual Result:** ✅ **SUCCESS!**
+- Email sent successfully
+- Returns complete email object with ID, status, timestamps, etc.
+- No `lead_id` required (removed from implementation)
+
+**Key Fix:**
+- API documentation showed `null` for optional array fields (`cc_emails`, `bcc_emails`, `attachments`)
+- But actual API validation requires **empty arrays `[]`** instead of `null`
+- Changed implementation to send `[]` for empty optional arrays
+- **Required n8n restart** to pick up new compiled code
 
 ---
 
@@ -169,7 +178,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 7c. Create Email Account | ✅ | VERIFIED | API endpoint verified correct, field validation fixed (cannot fully test without email credentials) |
 | 7d. Update Email Account | ✅ | PASS | ✅ APPROVED - Successfully updates individual fields (name, daily_limit=30, etc.) - fetches current data and merges updates |
 | 7e. Delete Email Account | ✅ | VERIFIED | Implementation verified correct - uses DELETE /sender-emails/{id}, follows established pattern |
-| 8. Compose Email | ⏳ | - | |
+| 8. Compose New Email | ⏳ | - | Endpoint verified: POST /replies/new |
 
 **Overall Status:** ⏳ TESTING IN PROGRESS
 
@@ -272,10 +281,10 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
-| Compose Email | POST | `/replies/compose` | ⏳ | HIGH | Send one-off emails |
+| Compose New Email | POST | `/replies/new` | ✅ | HIGH | Send one-off emails (no lead_id required, use empty arrays for optional fields) |
 | Get Many | GET | `/replies` | ⏳ | HIGH | View responses |
-| Mark as Interested | POST | `/replies/{id}/mark-interested` | ⏳ | MEDIUM | Lead qualification |
-| Push to Follow-up | POST | `/replies/{id}/push-to-followup` | ⏳ | MEDIUM | Campaign automation |
+| Mark as Interested | PATCH | `/replies/{id}/mark-as-interested` | ⏳ | MEDIUM | Lead qualification |
+| Push to Follow-up | POST | `/replies/{id}/followup-campaign/push` | ⏳ | MEDIUM | Campaign automation |
 
 ---
 
