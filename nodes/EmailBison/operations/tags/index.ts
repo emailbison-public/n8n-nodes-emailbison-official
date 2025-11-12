@@ -43,10 +43,10 @@ export const tagOperations: INodeProperties[] = [
 				action: 'Get many tags',
 			},
 			{
-				name: 'Attach Tags to Leads',
+				name: 'Attach Tags to Lead',
 				value: 'attachToLeads',
-				description: 'Attach multiple tags to leads',
-				action: 'Attach tags to leads',
+				description: 'Attach tags to a lead (executes once per input item when using dynamic expressions)',
+				action: 'Attach tags to a lead',
 			},
 			{
 				name: 'Remove Tags from Leads',

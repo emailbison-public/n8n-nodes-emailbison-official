@@ -44,12 +44,6 @@ export const leadOperations: INodeProperties[] = [
 				description: 'Update a lead',
 				action: 'Update a lead',
 			},
-			{
-				name: 'Attach Tags',
-				value: 'attachTags',
-				description: 'Attach tags to a lead',
-				action: 'Attach tags to a lead',
-			},
 		],
 		default: 'create',
 	},
@@ -209,53 +203,6 @@ export const leadFields: INodeProperties[] = [
 				],
 			},
 		],
-	},
-
-	// Attach Tags operation fields
-	{
-		displayName: 'Leads',
-		name: 'leadIds',
-		type: 'multiOptions',
-		typeOptions: {
-			loadOptionsMethod: 'getLeads',
-		},
-		displayOptions: {
-			show: {
-				resource: ['lead'],
-				operation: ['attachTags'],
-			},
-		},
-		default: [],
-		description: 'The leads to attach tags to. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-	},
-	{
-		displayName: 'Tags',
-		name: 'tagIds',
-		type: 'multiOptions',
-		typeOptions: {
-			loadOptionsMethod: 'getTags',
-		},
-		displayOptions: {
-			show: {
-				resource: ['lead'],
-				operation: ['attachTags'],
-			},
-		},
-		default: [],
-		description: 'The tags to attach to the leads. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-	},
-	{
-		displayName: 'Skip Webhooks',
-		name: 'skipWebhooks',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: ['lead'],
-				operation: ['attachTags'],
-			},
-		},
-		default: false,
-		description: 'Whether to skip firing webhooks for this action',
 	},
 
 	// Get Many operation fields

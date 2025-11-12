@@ -276,46 +276,5 @@ export async function executeLeadOperation(
 	// 	return { success: true, id: leadId };
 	// }
 
-	if (operation === 'attachTags') {
-		// Attach tags to leads (bulk operation)
-		const leadIds = this.getNodeParameter('leadIds', index) as string[];
-		const tagIds = this.getNodeParameter('tagIds', index) as string[];
-		const skipWebhooks = this.getNodeParameter('skipWebhooks', index, false) as boolean;
-
-		// Validate required fields
-		if (!leadIds || leadIds.length === 0) {
-			throw new Error('Please select at least one lead to attach tags to');
-		}
-		if (!tagIds || tagIds.length === 0) {
-			throw new Error('Please select at least one tag to attach');
-		}
-
-		// Convert string arrays to integer arrays
-		const leadIdsArray = leadIds.map((id: string) => parseInt(id, 10));
-		const tagIdsArray = tagIds.map((id: string) => parseInt(id, 10));
-
-		const body: IDataObject = {
-			lead_ids: leadIdsArray,
-			tag_ids: tagIdsArray,
-		};
-
-		if (skipWebhooks) {
-			body.skip_webhooks = true;
-		}
-
-		const responseData = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'POST',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: '/tags/attach-to-leads',
-				body,
-			},
-		);
-
-		return responseData;
-	}
-
 	throw new Error(`The operation "${operation}" is not supported for leads!`);
 }
