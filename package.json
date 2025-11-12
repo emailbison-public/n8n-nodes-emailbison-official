@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-emailbison",
+  "name": "n8n-nodes-emailbison-official",
   "version": "1.0.0",
   "description": "n8n community node for EmailBison - A white-labeled email outreach platform with dynamic server URL support",
   "keywords": [
@@ -38,7 +38,7 @@
     "lintfix": "eslint nodes credentials package.json --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+    "prepublishOnly": "npm run build && eslint -c .eslintrc.prepublish.js nodes/**/*.ts credentials/**/*.ts"
   },
   "files": [
     "dist"
