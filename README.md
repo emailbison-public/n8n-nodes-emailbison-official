@@ -1,4 +1,4 @@
-# n8n-nodes-emailbison
+# n8n-nodes-emailbison-official
 
 This is an n8n community node for EmailBison, a white-labeled email marketing platform. It allows you to integrate EmailBison's email marketing capabilities into your n8n workflows.
 
@@ -23,7 +23,7 @@ To install this community node in n8n:
 
 1. Go to **Settings** > **Community Nodes** in your n8n instance
 2. Click **Install a community node**
-3. Enter `n8n-nodes-emailbison`
+3. Enter `n8n-nodes-emailbison-official`
 4. Click **Install**
 
 ### Option 2: Manual Installation
@@ -33,7 +33,7 @@ To install this community node in n8n:
 cd ~/.n8n
 
 # Install the package
-npm install n8n-nodes-emailbison
+npm install n8n-nodes-emailbison-official
 
 # Restart n8n
 ```
@@ -45,7 +45,7 @@ Add the package to your n8n Docker setup:
 ```dockerfile
 FROM n8nio/n8n
 USER root
-RUN npm install -g n8n-nodes-emailbison
+RUN npm install -g n8n-nodes-emailbison-official
 USER node
 ```
 
