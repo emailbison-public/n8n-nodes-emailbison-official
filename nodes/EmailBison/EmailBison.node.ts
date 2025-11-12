@@ -316,7 +316,19 @@ export class EmailBison implements INodeType {
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
 
-		for (let i = 0; i < items.length; i++) {
+		// Operations that should execute only once regardless of input items
+		const executeOnceOperations = [
+			{ resource: 'lead', operation: 'attachTags' },
+		];
+
+		const shouldExecuteOnce = executeOnceOperations.some(
+			(op) => op.resource === resource && op.operation === operation
+		);
+
+		// If this is an "execute once" operation, only process the first item
+		const itemsToProcess = shouldExecuteOnce ? 1 : items.length;
+
+		for (let i = 0; i < itemsToProcess; i++) {
 			try {
 				let responseData;
 
