@@ -8,13 +8,12 @@ This is an n8n community node for EmailBison, a white-labeled email marketing pl
 
 - **Dynamic Server URL Support**: Works with any EmailBison white-label instance by allowing custom server URL configuration
 - **Comprehensive API Coverage**: Supports all major EmailBison resources including:
-  - **Leads**: Create, read, update, delete, and manage email contacts
+  - **Leads**: Create, read, update, and manage email contacts with custom fields and tags
   - **Campaigns**: Create and manage email campaigns, start/stop campaigns, add leads
   - **Email Accounts**: Configure and manage SMTP sender accounts
-  - **Tags**: Organize leads and campaigns with tags
-  - **Master Inbox**: Manage email replies and conversations
-  - **Workspaces**: Handle workspace/team management
-  - **Webhooks**: Set up event notifications for email activities
+  - **Tags**: Organize leads with tags
+  - **Replies**: Send one-off emails and track email replies with advanced filtering
+  - **Sequence Steps**: Manage campaign email sequences
 
 ## Installation
 
@@ -95,63 +94,53 @@ Your server URL is the base URL of your EmailBison instance, typically in the fo
 4. Start the campaign (using Campaign > Start operation)
 ```
 
-#### Set up Webhook Notifications
+#### Track Email Replies
 ```
-1. Use Webhook > Create operation
-2. Enter your webhook URL
-3. Select events to monitor (email sent, delivered, opened, etc.)
-4. The webhook will receive real-time notifications
+1. Use Reply > Get Many operation
+2. Add filters (campaign_id, lead_id, status)
+3. Process replies in your workflow
+4. Optionally mark as interested or push to follow-up campaigns
 ```
 
 ## Supported Operations
 
 ### Leads
-- **Create**: Add new leads to your database
-- **Get**: Retrieve a specific lead by ID
-- **Get Many**: List multiple leads with filtering options
-- **Update**: Modify existing lead information
-- **Delete**: Remove leads from your database
+- **Create**: Add new leads with email, name, company, and custom fields
+- **Get**: Retrieve a specific lead by ID (with dropdown selector)
+- **Get Many**: List multiple leads (max 15 items due to API pagination)
+- **Update**: Modify lead information (first_name, last_name, company, phone, email, custom_fields)
 
 ### Campaigns
-- **Create**: Create new email campaigns
-- **Get**: Retrieve campaign details
-- **Get Many**: List campaigns with filtering
-- **Update**: Modify campaign settings
-- **Delete**: Remove campaigns
-- **Start**: Launch a campaign
-- **Stop**: Pause a running campaign
-- **Add Leads**: Add leads to an existing campaign
+- **Create**: Create new email campaigns with name and sender emails
+- **Get**: Retrieve campaign details (with dropdown selector)
+- **Get Many**: List all campaigns
+- **Update**: Modify campaign name and sender emails
+- **Add Leads**: Bulk add leads to campaigns (processes all input items)
+- **Start/Resume**: Launch or resume paused campaigns
+- **Stop/Pause**: Pause running campaigns
 
 ### Email Accounts
-- **Create**: Set up new SMTP sender accounts
-- **Get**: Retrieve account details
+- **Create**: Set up new SMTP sender accounts with full configuration
+- **Get**: Retrieve account details (with dropdown selector)
 - **Get Many**: List all email accounts
-- **Update**: Modify account settings
+- **Update**: Modify account settings (name, daily_limit, etc.)
 - **Delete**: Remove email accounts
 
 ### Tags
-- **Create**: Create new tags for organization
-- **Get**: Retrieve tag information
-- **Get Many**: List all tags
-- **Update**: Modify tag properties
+- **Create**: Create new tags for lead organization
+- **Get Many**: List all tags (used in dropdowns throughout the node)
 - **Delete**: Remove tags
 
-### Master Inbox
-- **Get Messages**: Retrieve email replies and conversations
-- **Reply**: Send replies to received emails
-- **Mark as Read**: Update message status
+### Replies
+- **Compose New Email**: Send one-off emails outside of campaigns
+  - Supports: to_emails, cc_emails, bcc_emails, subject, message, content_type
+  - No lead_id required
+- **Get Many**: Retrieve email replies with advanced filtering
+  - Filter by: campaign_id, lead_id, status (unread/read/interested/not_interested)
+  - Returns full reply metadata including timestamps, sender/recipient info
 
-### Workspaces
-- **Get**: Retrieve workspace information
-- **Get Many**: List workspaces
-- **Update**: Modify workspace settings
-
-### Webhooks
-- **Create**: Set up webhook endpoints
-- **Get**: Retrieve webhook details
-- **Get Many**: List all webhooks
-- **Update**: Modify webhook settings
-- **Delete**: Remove webhooks
+### Sequence Steps
+- **Delete**: Remove steps from campaign sequences
 
 ## Advanced Features
 
@@ -160,9 +149,9 @@ The node supports EmailBison's custom fields for leads. You can add custom key-v
 
 ### Filtering and Pagination
 Most "Get Many" operations support:
-- **Filtering**: Filter results by various criteria (email, tags, company, etc.)
-- **Pagination**: Control the number of results returned
-- **Return All**: Option to retrieve all results without pagination
+- **Filtering**: Filter results by various criteria (campaign_id, lead_id, status, etc.)
+- **Pagination**: Note that Get Many Leads returns maximum 15 items due to API limitation
+- **Return All**: Option available for operations that support pagination
 
 ### Error Handling
 The node includes comprehensive error handling:
@@ -187,9 +176,17 @@ The node includes comprehensive error handling:
 - Ensure you're using the latest version of the node
 - Check that your EmailBison instance supports the API endpoint
 
+### Known Limitations
+
+1. **Pagination**: Get Many Leads returns maximum 15 items (API limitation)
+2. **Get Tag (Single)**: Returns 403 Forbidden (API authorization bug)
+3. **Delete Campaign**: Not supported by EmailBison API
+4. **Update Lead Response**: API doesn't return all updated fields (phone, email, custom_fields)
+5. **Compose Email Arrays**: Must use empty arrays `[]` instead of `null` for optional fields
+
 ### Getting Help
 
-1. Check the [EmailBison API documentation](https://docs.emailbison.com)
+1. Open an issue on the [GitHub repository](https://github.com/emailbison-public/n8n-nodes-emailbison-official)
 2. Verify your credentials and server URL
 3. Test the connection using the credential test feature
 4. Check n8n logs for detailed error messages
@@ -200,17 +197,17 @@ The node includes comprehensive error handling:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/n8n-nodes-emailbison.git
-cd n8n-nodes-emailbison
+git clone https://github.com/emailbison-public/n8n-nodes-emailbison-official.git
+cd n8n-nodes-emailbison-official
 
 # Install dependencies
-npm install
+pnpm install
 
 # Build the project
-npm run build
+pnpm run build
 
 # Run linting
-npm run lint
+pnpm run lint
 ```
 
 ### Testing
@@ -221,6 +218,16 @@ The node includes credential testing to verify your API connection. When setting
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## Roadmap
+
+### Planned for v1.1.0
+- **Send Test Email** - Test sequence steps before launching campaigns
+- **Webhooks** - Real-time automation triggers (Create, Get, Get Many, Update, Delete)
+- **Attach Tags to Lead** - Bulk tag operations
+- **Update Tag** - Rename tags
+
+See [CHANGELOG.md](CHANGELOG.md) for full version history.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -229,7 +236,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 For support with this n8n community node:
 1. Check the troubleshooting section above
-2. Review the EmailBison API documentation
-3. Open an issue on the GitHub repository
+2. Check the [Known Limitations](#known-limitations) section
+3. Open an issue on the [GitHub repository](https://github.com/emailbison-public/n8n-nodes-emailbison-official)
 
 For EmailBison platform support, contact your EmailBison provider directly.
+
+## Version
+
+Current version: **1.0.0**

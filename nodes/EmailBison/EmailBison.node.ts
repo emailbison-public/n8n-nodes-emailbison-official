@@ -112,7 +112,6 @@ export class EmailBison implements INodeType {
 				const credentials = await this.getCredentials('emailBisonApi');
 
 				try {
-					console.log('🔍 getLeads: Fetching leads with limit=100...');
 
 					const response = await this.helpers.httpRequestWithAuthentication.call(
 						this,
@@ -127,7 +126,6 @@ export class EmailBison implements INodeType {
 						},
 					);
 
-					console.log('🔍 getLeads: Full API response:', JSON.stringify(response, null, 2));
 
 					const leads = response.data || response;
 
@@ -136,14 +134,11 @@ export class EmailBison implements INodeType {
 						return [];
 					}
 
-					console.log(`✅ getLeads: Successfully loaded ${leads.length} leads`);
 
 					// Log pagination info if available
 					if (response.meta) {
-						console.log('📊 getLeads: Pagination info:', response.meta);
 					}
 					if (response.links) {
-						console.log('🔗 getLeads: Links:', response.links);
 					}
 
 					return leads.map((lead: any) => ({
@@ -182,7 +177,6 @@ export class EmailBison implements INodeType {
 						return [];
 					}
 
-					console.log(`✅ getCampaigns: Loaded ${campaigns.length} campaigns`);
 
 					return campaigns.map((campaign: any) => ({
 						name: `${campaign.name} - ${campaign.status || 'N/A'} (ID: ${campaign.id})`,
@@ -220,7 +214,6 @@ export class EmailBison implements INodeType {
 						return [];
 					}
 
-					console.log(`✅ getSenderEmails: Loaded ${senderEmails.length} email accounts`);
 
 					return senderEmails.map((email: any) => ({
 						name: `${email.email} - ${email.name || 'N/A'} (ID: ${email.id})`,
@@ -258,7 +251,6 @@ export class EmailBison implements INodeType {
 						return [];
 					}
 
-					console.log(`✅ getWorkspaces: Loaded ${workspaces.length} workspaces`);
 
 					return workspaces.map((workspace: any) => ({
 						name: `${workspace.name} (ID: ${workspace.id})`,
@@ -296,7 +288,6 @@ export class EmailBison implements INodeType {
 						return [];
 					}
 
-					console.log(`✅ getTags: Loaded ${tags.length} tags`);
 
 					return tags.map((tag: any) => ({
 						name: `${tag.name} (ID: ${tag.id})`,

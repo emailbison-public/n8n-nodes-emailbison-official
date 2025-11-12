@@ -43,8 +43,6 @@ export async function executeLeadOperation(
 			}
 		}
 
-		console.log('🔍 CREATE LEAD - Step 1: Creating lead with body:', JSON.stringify(body, null, 2));
-
 		try {
 			const responseData = await this.helpers.httpRequestWithAuthentication.call(
 				this,
@@ -56,8 +54,6 @@ export async function executeLeadOperation(
 					body,
 				},
 			);
-
-			console.log('✅ CREATE LEAD - Step 1: Lead created:', JSON.stringify(responseData, null, 2));
 
 			const leadData = responseData.data || responseData;
 			const leadId = leadData.id;
@@ -71,8 +67,6 @@ export async function executeLeadOperation(
 				} else {
 					tagIds = tags.split(',').map((tag: string) => parseInt(tag.trim(), 10));
 				}
-
-				console.log(`🔍 CREATE LEAD - Step 2: Attaching ${tagIds.length} tags to lead ${leadId}:`, tagIds);
 
 				try {
 					await this.helpers.httpRequestWithAuthentication.call(
@@ -88,11 +82,8 @@ export async function executeLeadOperation(
 							},
 						},
 					);
-					console.log('✅ CREATE LEAD - Step 2: Tags attached successfully');
 				} catch (error: any) {
-					console.error('❌ CREATE LEAD - Step 2: Failed to attach tags:', error.message);
 					// Don't throw - lead was created successfully, just tags failed
-					console.warn('⚠️ CREATE LEAD - Lead created but tags were not attached');
 				}
 			}
 
@@ -174,8 +165,6 @@ export async function executeLeadOperation(
 			qs['filters.without_tags'] = true;
 		}
 
-		console.log('🔍 GET MANY LEADS - Query parameters:', JSON.stringify(qs, null, 2));
-
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
@@ -187,15 +176,8 @@ export async function executeLeadOperation(
 			},
 		);
 
-		console.log('📊 GET MANY LEADS - API returned:', {
-			leads_count: responseData.data?.length || 0,
-			has_meta: !!responseData.meta,
-		});
-
 		// Extract the leads array from the response
 		const leads = responseData.data || responseData;
-
-		console.log(`✅ GET MANY LEADS - Returning ${leads.length} leads (API max: 15)`);
 
 		// Return in n8n format: array of objects with 'json' property
 		return leads.map((lead: IDataObject) => ({ json: lead }));

@@ -13,14 +13,14 @@
     "white-label"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/your-username/n8n-nodes-emailbison",
+  "homepage": "https://github.com/emailbison-public/n8n-nodes-emailbison-official",
   "author": {
     "name": "Brandon Charleson",
     "email": "170791+bcharleson@users.noreply.github.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bcharleson/emailbison.git"
+    "url": "https://github.com/emailbison-public/n8n-nodes-emailbison-official.git"
   },
   "engines": {
     "node": ">=18.10",

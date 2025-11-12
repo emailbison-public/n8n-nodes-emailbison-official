@@ -100,7 +100,6 @@ export async function executeCampaignOperation(
 						},
 					},
 				);
-				console.log(`✅ Attached ${senderEmails.length} sender email(s) to campaign ${campaignId}`);
 			} catch (error) {
 				console.error(`❌ Failed to attach sender emails to campaign ${campaignId}:`, error);
 				// Don't throw - campaign was created successfully, just log the error
@@ -135,7 +134,6 @@ export async function executeCampaignOperation(
 						body: sequenceStepBody,
 					},
 				);
-				console.log(`✅ Created sequence step for campaign ${campaignId}`);
 			} catch (error) {
 				console.error(`❌ Failed to create sequence step for campaign ${campaignId}:`, error);
 				// Don't throw - campaign was created successfully, just log the error
@@ -251,7 +249,6 @@ export async function executeCampaignOperation(
 			body.tags = tags;
 		}
 
-		console.log(`🔍 Campaign Update - ID: ${campaignId}, Body:`, JSON.stringify(body, null, 2));
 
 		// Step 1: Update the campaign
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -265,7 +262,6 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		console.log(`✅ Campaign Update Response:`, JSON.stringify(responseData, null, 2));
 
 		// Step 2: Attach sender emails to the campaign (if any were provided)
 		if (senderEmails.length > 0) {
@@ -282,7 +278,6 @@ export async function executeCampaignOperation(
 						},
 					},
 				);
-				console.log(`✅ Attached ${senderEmails.length} sender email(s) to campaign ${campaignId}`);
 			} catch (error) {
 				console.error(`❌ Failed to attach sender emails to campaign ${campaignId}:`, error);
 				// Don't throw - campaign was updated successfully, just log the error
@@ -296,7 +291,6 @@ export async function executeCampaignOperation(
 		// Start/Resume campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
 
-		console.log(`🔍 START/RESUME CAMPAIGN - Campaign ID: ${campaignId}`);
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
@@ -308,7 +302,6 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		console.log('✅ START/RESUME CAMPAIGN - Response:', JSON.stringify(responseData, null, 2));
 
 		return [{ json: responseData.data || responseData }];
 	}
@@ -317,7 +310,6 @@ export async function executeCampaignOperation(
 		// Stop/Pause campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
 
-		console.log(`🔍 STOP/PAUSE CAMPAIGN - Campaign ID: ${campaignId}`);
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
@@ -329,7 +321,6 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		console.log('✅ STOP/PAUSE CAMPAIGN - Response:', JSON.stringify(responseData, null, 2));
 
 		return [{ json: responseData.data || responseData }];
 	}
@@ -364,7 +355,6 @@ export async function executeCampaignOperation(
 			throw new Error('No valid lead IDs provided');
 		}
 
-		console.log(`🔍 ADD LEADS TO CAMPAIGN - Campaign ID: ${campaignId}, Lead IDs:`, leadIdsArray);
 
 		const body: IDataObject = {
 			lead_ids: leadIdsArray,
@@ -381,7 +371,6 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		console.log('✅ ADD LEADS TO CAMPAIGN - Response:', JSON.stringify(responseData, null, 2));
 
 		return [{ json: responseData.data || responseData }];
 	}
