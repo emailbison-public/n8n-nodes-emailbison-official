@@ -155,6 +155,29 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ---
 
+### Test 7: Get Many Replies
+**Status:** ✅ PASSED
+**Priority:** HIGH
+
+**Steps:**
+1. Add EmailBison node
+2. Select Resource: **Reply**
+3. Select Operation: **Get Many**
+4. Set Return All: **ON** (or set Limit)
+5. Execute node
+
+**Expected Result:**
+- ✅ No errors
+- ✅ Returns array of replies with full metadata
+- ✅ Each reply includes: id, subject, message, raw_body, sender/recipient info, timestamps, campaign/lead associations
+
+**Actual Result:** ✅ **SUCCESS!**
+- Returned 16 replies successfully
+- All reply data present: id, uuid, subject, message, raw_body, headers, sender_email_id, from_name, from_email_address, reply_to_email_address, to (recipients), cc, bcc, attachments, campaign_id, lead_id, type, tracked_reply, created_at, updated_at, date_received
+- Perfect for viewing email responses and building automation workflows
+
+---
+
 ## 📊 Test Results Summary
 
 | Test | Status | Pass/Fail | Notes |
@@ -179,6 +202,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 7d. Update Email Account | ✅ | PASS | ✅ APPROVED - Successfully updates individual fields (name, daily_limit=30, etc.) - fetches current data and merges updates |
 | 7e. Delete Email Account | ✅ | VERIFIED | Implementation verified correct - uses DELETE /sender-emails/{id}, follows established pattern |
 | 8. Compose New Email | ✅ | PASS | ✅ Email sent successfully - no lead_id required, uses empty arrays for optional fields |
+| 9. Get Many Replies | ✅ | PASS | ✅ Returns 16 replies with full metadata (subject, message, timestamps, campaign/lead associations) |
 
 **Overall Status:** ⏳ TESTING IN PROGRESS
 
@@ -282,7 +306,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | Operation | Method | Endpoint | Status | Priority | Notes |
 |-----------|--------|----------|--------|----------|-------|
 | Compose New Email | POST | `/replies/new` | ✅ | HIGH | Send one-off emails (no lead_id required, use empty arrays for optional fields) |
-| Get Many | GET | `/replies` | ⏳ | HIGH | View responses |
+| Get Many | GET | `/replies` | ✅ | HIGH | Returns list of replies with full metadata (16 items returned in test) |
 | Mark as Interested | PATCH | `/replies/{id}/mark-as-interested` | ⏳ | MEDIUM | Lead qualification |
 | Push to Follow-up | POST | `/replies/{id}/followup-campaign/push` | ⏳ | MEDIUM | Campaign automation |
 
