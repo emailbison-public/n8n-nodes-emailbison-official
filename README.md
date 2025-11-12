@@ -243,4 +243,4 @@ For EmailBison platform support, contact your EmailBison provider directly.
 
 ## Version
 
-Current version: **1.0.0**
+Current version: **1.0.1**
