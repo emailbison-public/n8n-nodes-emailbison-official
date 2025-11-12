@@ -154,7 +154,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 1b. Get Lead | ✅ | PASS | Lead dropdown working, returns full lead data |
 | 2. Get Many Leads | ✅ | PASS ⚠️ | **API Limitation**: Always returns 15 items max (API ignores limit param) |
 | 3. Update Lead | ✅ | PASS ⚠️ | ✅ first_name, last_name, company confirmed<br>❓ phone, email not in response (can't verify)<br>❌ custom_fields not appearing in response |
-| 3b. Attach Tags to Leads | ✅ | PASS | Bulk operation with dynamic dropdowns - UI validation fixed |
+| ~~3b. Attach Tags to Leads~~ | ❌ | REMOVED | **DUPLICATE REMOVED** - Use Tags → "Attach Tags to Lead" instead |
 | 4. Create Campaign | ✅ | PASS | Three-step process working perfectly - UI validation fixed |
 | 4b. Add Sequence Step | ✅ | PASS | Campaign dropdown working, steps added correctly |
 | 4c. Delete Sequence Step | ✅ | PASS | Sequence steps deleted successfully |
@@ -177,7 +177,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 
 ## 📋 Resources & Operations Summary
 
-### ✅ 1. LEADS (5 operations - ALL TESTED ✅)
+### ✅ 1. LEADS (4 operations - ALL TESTED ✅)
 **Endpoint:** `/api/leads`
 
 | Operation | Method | Endpoint | Status | Priority | Notes |
@@ -186,7 +186,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | Get | GET | `/leads/{id}` | ✅ | HIGH | Tested - dropdown working |
 | Get Many | GET | `/leads` | ✅ | HIGH | **API Limitation**: Hard limit of 15 items (no pagination) |
 | Update | PATCH | `/leads/{id}` | ✅ | HIGH | Tested - name/company work; phone/email/custom_fields unverified |
-| Attach Tags | POST | `/tags/attach-to-leads` | ✅ | MEDIUM | Tested - Bulk operation with dynamic dropdowns |
+| ~~Attach Tags~~ | ~~POST~~ | ~~`/tags/attach-to-leads`~~ | ❌ | N/A | **REMOVED** - Duplicate of Tags resource operation (see Tags → Attach to Lead) |
 | ~~Delete~~ | ~~DELETE~~ | ~~`/leads/{id}`~~ | ❌ | N/A | **NOT IMPLEMENTED** - Commented out in code (endpoint may not exist) |
 
 **Known Issues:**
@@ -229,7 +229,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | Get Many | GET | `/tags` | ✅ | HIGH | Tested - returns tag list for dropdowns |
 | Update | PATCH | `/tags/{id}` | ⏳ | MEDIUM | |
 | Delete | DELETE | `/tags/{id}` | ✅ | LOW | Tested - deletes tags successfully |
-| Attach to Leads | POST | `/tags/attach-to-leads` | ⏳ | MEDIUM | **ISSUE**: Validation error - investigating |
+| Attach to Lead | POST | `/tags/attach-to-leads` | ⏳ | MEDIUM | **RENAMED** from "Attach to Leads" (plural) - executes once per input item with dynamic expressions |
 
 ---
 
