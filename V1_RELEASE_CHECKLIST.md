@@ -178,7 +178,7 @@ Verify all implemented operations work correctly with the EmailBison API before 
 | 7c. Create Email Account | ✅ | VERIFIED | API endpoint verified correct, field validation fixed (cannot fully test without email credentials) |
 | 7d. Update Email Account | ✅ | PASS | ✅ APPROVED - Successfully updates individual fields (name, daily_limit=30, etc.) - fetches current data and merges updates |
 | 7e. Delete Email Account | ✅ | VERIFIED | Implementation verified correct - uses DELETE /sender-emails/{id}, follows established pattern |
-| 8. Compose New Email | ⏳ | - | Endpoint verified: POST /replies/new |
+| 8. Compose New Email | ✅ | PASS | ✅ Email sent successfully - no lead_id required, uses empty arrays for optional fields |
 
 **Overall Status:** ⏳ TESTING IN PROGRESS
 
