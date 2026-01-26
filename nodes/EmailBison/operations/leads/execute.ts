@@ -239,24 +239,65 @@ export async function executeLeadOperation(
 		return responseData;
 	}
 
-	// NOTE: DELETE endpoint does not exist in EmailBison API (as of 2025-10-19)
-	// Commented out but kept for future implementation
-	// if (operation === 'delete') {
-	// 	// Delete lead
-	// 	const leadId = this.getNodeParameter('leadId', index) as string;
+	if (operation === 'delete') {
+		// Delete a single lead
+		const leadId = this.getNodeParameter('leadId', index) as string;
 
-	// 	const responseData = await this.helpers.httpRequestWithAuthentication.call(
-	// 		this,
-	// 		'emailBisonApi',
-	// 		{
-	// 			method: 'DELETE',
-	// 			baseURL: `${credentials.serverUrl}/api`,
-	// 			url: `/leads/${leadId}`,
-	// 		},
-	// 	);
+		await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/leads/${leadId}`,
+			},
+		);
 
-	// 	return { success: true, id: leadId };
-	// }
+		return [{ json: { success: true, deleted: true, id: leadId } }];
+	}
+
+	if (operation === 'deleteMany') {
+		// Delete multiple leads (bulk delete)
+		const leadIdsInput = this.getNodeParameter('leadIds', index) as string | number | number[];
+
+		// Handle different input types: string, number, or array
+		let leadIds: number[] = [];
+
+		if (typeof leadIdsInput === 'number') {
+			// Single number from expression like {{ $json.id }}
+			leadIds = [leadIdsInput];
+		} else if (Array.isArray(leadIdsInput)) {
+			// Array of numbers/strings
+			leadIds = leadIdsInput.map((id) => typeof id === 'number' ? id : parseInt(String(id).trim(), 10));
+		} else if (typeof leadIdsInput === 'string') {
+			// Comma-separated string: "123,456,789"
+			leadIds = leadIdsInput
+				.split(',')
+				.map((id: string) => parseInt(id.trim(), 10));
+		}
+
+		// Filter out any NaN values
+		leadIds = leadIds.filter((id: number) => !isNaN(id));
+
+		if (leadIds.length === 0) {
+			throw new Error('No valid lead IDs provided. Please provide comma-separated numeric IDs, a single ID, or an array of IDs.');
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/leads/bulk',
+				body: {
+					lead_ids: leadIds,
+				},
+			},
+		);
+
+		return [{ json: { success: true, deleted: true, count: leadIds.length, lead_ids: leadIds, response: responseData } }];
+	}
 
 	throw new Error(`The operation "${operation}" is not supported for leads!`);
 }

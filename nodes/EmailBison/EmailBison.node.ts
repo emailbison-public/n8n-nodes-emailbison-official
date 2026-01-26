@@ -16,6 +16,8 @@ import { workspaceOperations, workspaceFields } from './operations/workspaces';
 import { webhookOperations, webhookFields } from './operations/webhooks';
 import { sequenceStepOperations, sequenceStepFields } from './operations/sequenceSteps';
 import { replyOperations, replyFields } from './operations/replies';
+import { blacklistedEmailOperations, blacklistedEmailFields } from './operations/blacklistedEmails';
+import { blacklistedDomainOperations, blacklistedDomainFields } from './operations/blacklistedDomains';
 
 export class EmailBison implements INodeType {
 	description: INodeTypeDescription = {
@@ -52,8 +54,12 @@ export class EmailBison implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Lead',
-						value: 'lead',
+						name: 'Blacklisted Domain',
+						value: 'blacklistedDomain',
+					},
+					{
+						name: 'Blacklisted Email',
+						value: 'blacklistedEmail',
 					},
 					{
 						name: 'Campaign',
@@ -64,44 +70,52 @@ export class EmailBison implements INodeType {
 						value: 'emailAccount',
 					},
 					{
-						name: 'Tag',
-						value: 'tag',
+						name: 'Lead',
+						value: 'lead',
 					},
 					{
-						name: 'Workspace',
-						value: 'workspace',
-					},
-					{
-						name: 'Webhook',
-						value: 'webhook',
+						name: 'Reply',
+						value: 'reply',
 					},
 					{
 						name: 'Sequence Step',
 						value: 'sequenceStep',
 					},
 					{
-						name: 'Reply',
-						value: 'reply',
+						name: 'Tag',
+						value: 'tag',
+					},
+					{
+						name: 'Webhook',
+						value: 'webhook',
+					},
+					{
+						name: 'Workspace',
+						value: 'workspace',
 					},
 				],
 				default: 'lead',
 			},
-			...leadOperations,
+			...blacklistedDomainOperations,
+			...blacklistedEmailOperations,
 			...campaignOperations,
 			...emailAccountOperations,
-			...tagOperations,
-			...workspaceOperations,
-			...webhookOperations,
-			...sequenceStepOperations,
+			...leadOperations,
 			...replyOperations,
-			...leadFields,
+			...sequenceStepOperations,
+			...tagOperations,
+			...webhookOperations,
+			...workspaceOperations,
+			...blacklistedDomainFields,
+			...blacklistedEmailFields,
 			...campaignFields,
 			...emailAccountFields,
-			...tagFields,
-			...workspaceFields,
-			...webhookFields,
-			...sequenceStepFields,
+			...leadFields,
 			...replyFields,
+			...sequenceStepFields,
+			...tagFields,
+			...webhookFields,
+			...workspaceFields,
 		],
 	};
 
@@ -311,30 +325,36 @@ export class EmailBison implements INodeType {
 			try {
 				let responseData;
 
-				if (resource === 'lead') {
-					const { executeLeadOperation } = await import('./operations/leads/execute');
-					responseData = await executeLeadOperation.call(this, operation, i);
+				if (resource === 'blacklistedDomain') {
+					const { executeBlacklistedDomainOperation } = await import('./operations/blacklistedDomains/execute');
+					responseData = await executeBlacklistedDomainOperation.call(this, operation, i);
+				} else if (resource === 'blacklistedEmail') {
+					const { executeBlacklistedEmailOperation } = await import('./operations/blacklistedEmails/execute');
+					responseData = await executeBlacklistedEmailOperation.call(this, operation, i);
 				} else if (resource === 'campaign') {
 					const { executeCampaignOperation } = await import('./operations/campaigns/execute');
 					responseData = await executeCampaignOperation.call(this, operation, i);
 				} else if (resource === 'emailAccount') {
 					const { executeEmailAccountOperation } = await import('./operations/emailAccounts/execute');
 					responseData = await executeEmailAccountOperation.call(this, operation, i);
-				} else if (resource === 'tag') {
-					const { executeTagOperation } = await import('./operations/tags/execute');
-					responseData = await executeTagOperation.call(this, operation, i);
-				} else if (resource === 'workspace') {
-					const { executeWorkspaceOperation } = await import('./operations/workspaces/execute');
-					responseData = await executeWorkspaceOperation.call(this, operation, i);
-				} else if (resource === 'webhook') {
-					const { executeWebhookOperation } = await import('./operations/webhooks/execute');
-					responseData = await executeWebhookOperation.call(this, operation, i);
-				} else if (resource === 'sequenceStep') {
-					const { executeSequenceStepOperation } = await import('./operations/sequenceSteps/execute');
-					responseData = await executeSequenceStepOperation.call(this, operation, i);
+				} else if (resource === 'lead') {
+					const { executeLeadOperation } = await import('./operations/leads/execute');
+					responseData = await executeLeadOperation.call(this, operation, i);
 				} else if (resource === 'reply') {
 					const { executeReplyOperation } = await import('./operations/replies/execute');
 					responseData = await executeReplyOperation.call(this, operation, i);
+				} else if (resource === 'sequenceStep') {
+					const { executeSequenceStepOperation } = await import('./operations/sequenceSteps/execute');
+					responseData = await executeSequenceStepOperation.call(this, operation, i);
+				} else if (resource === 'tag') {
+					const { executeTagOperation } = await import('./operations/tags/execute');
+					responseData = await executeTagOperation.call(this, operation, i);
+				} else if (resource === 'webhook') {
+					const { executeWebhookOperation } = await import('./operations/webhooks/execute');
+					responseData = await executeWebhookOperation.call(this, operation, i);
+				} else if (resource === 'workspace') {
+					const { executeWorkspaceOperation } = await import('./operations/workspaces/execute');
+					responseData = await executeWorkspaceOperation.call(this, operation, i);
 				} else {
 					throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not known!`);
 				}

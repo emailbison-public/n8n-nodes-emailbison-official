@@ -13,10 +13,34 @@ export const campaignOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Add Leads',
+				value: 'addLeads',
+				description: 'Add leads to a campaign',
+				action: 'Add leads to campaign',
+			},
+			{
+				name: 'Add Sequence Step',
+				value: 'addSequenceStep',
+				description: 'Add a follow-up email step to a campaign sequence',
+				action: 'Add sequence step to campaign',
+			},
+			{
 				name: 'Create',
 				value: 'create',
 				description: 'Create a new campaign',
 				action: 'Create a campaign',
+			},
+			{
+				name: 'Delete',
+				value: 'delete',
+				description: 'Delete a campaign',
+				action: 'Delete a campaign',
+			},
+			{
+				name: 'Delete Many',
+				value: 'deleteMany',
+				description: 'Delete multiple campaigns',
+				action: 'Delete many campaigns',
 			},
 			{
 				name: 'Get',
@@ -31,12 +55,6 @@ export const campaignOperations: INodeProperties[] = [
 				action: 'Get many campaigns',
 			},
 			{
-				name: 'Update',
-				value: 'update',
-				description: 'Update a campaign',
-				action: 'Update a campaign',
-			},
-			{
 				name: 'Start/Resume',
 				value: 'resume',
 				description: 'Start or resume a campaign',
@@ -49,16 +67,10 @@ export const campaignOperations: INodeProperties[] = [
 				action: 'Stop/Pause a campaign',
 			},
 			{
-				name: 'Add Leads',
-				value: 'addLeads',
-				description: 'Add leads to a campaign',
-				action: 'Add leads to campaign',
-			},
-			{
-				name: 'Add Sequence Step',
-				value: 'addSequenceStep',
-				description: 'Add a follow-up email step to a campaign sequence',
-				action: 'Add sequence step to campaign',
+				name: 'Update',
+				value: 'update',
+				description: 'Update a campaign',
+				action: 'Update a campaign',
 			},
 		],
 		default: 'create',
@@ -257,7 +269,7 @@ export const campaignFields: INodeProperties[] = [
 		description: 'Tags to attach to the campaign. Choose from the list, or specify tag IDs using an expression.',
 	},
 
-	// Get/Start/Stop/Pause/AddLeads operation fields (Update has its own field above)
+	// Get/Start/Stop/Pause/AddLeads/Delete operation fields (Update has its own field above)
 	{
 		displayName: 'Campaign',
 		name: 'campaignId',
@@ -269,11 +281,28 @@ export const campaignFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['campaign'],
-				operation: ['get', 'resume', 'pause', 'addLeads'],
+				operation: ['get', 'resume', 'pause', 'addLeads', 'delete'],
 			},
 		},
 		default: '',
 		description: 'The campaign to work with. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+
+	// Delete Many operation fields
+	{
+		displayName: 'Campaign IDs',
+		name: 'campaignIds',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['deleteMany'],
+			},
+		},
+		default: '',
+		description: 'Comma-separated list of campaign IDs to delete (e.g., "123,456,789"). This action is permanent and cannot be undone.',
+		placeholder: '123,456,789',
 	},
 
 	// Add Leads operation fields

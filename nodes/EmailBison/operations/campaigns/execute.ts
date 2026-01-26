@@ -375,6 +375,70 @@ export async function executeCampaignOperation(
 		return [{ json: responseData.data || responseData }];
 	}
 
+	if (operation === 'delete') {
+		// Delete a single campaign
+		const campaignId = this.getNodeParameter('campaignId', index) as string;
+
+		if (!campaignId || campaignId.trim() === '') {
+			throw new Error('Please select a campaign to delete');
+		}
+
+		await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/campaigns/${campaignId}`,
+			},
+		);
+
+		return [{ json: { success: true, deleted: true, id: campaignId } }];
+	}
+
+	if (operation === 'deleteMany') {
+		// Delete multiple campaigns (bulk delete)
+		const campaignIdsInput = this.getNodeParameter('campaignIds', index) as string | number | number[];
+
+		// Handle different input types: string, number, or array
+		let campaignIds: number[] = [];
+
+		if (typeof campaignIdsInput === 'number') {
+			// Single number from expression like {{ $json.id }}
+			campaignIds = [campaignIdsInput];
+		} else if (Array.isArray(campaignIdsInput)) {
+			// Array of numbers/strings
+			campaignIds = campaignIdsInput.map((id) => typeof id === 'number' ? id : parseInt(String(id).trim(), 10));
+		} else if (typeof campaignIdsInput === 'string') {
+			// Comma-separated string: "123,456,789"
+			campaignIds = campaignIdsInput
+				.split(',')
+				.map((id: string) => parseInt(id.trim(), 10));
+		}
+
+		// Filter out any NaN values
+		campaignIds = campaignIds.filter((id: number) => !isNaN(id));
+
+		if (campaignIds.length === 0) {
+			throw new Error('No valid campaign IDs provided. Please provide comma-separated numeric IDs, a single ID, or an array of IDs.');
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/campaigns/bulk',
+				body: {
+					campaign_ids: campaignIds,
+				},
+			},
+		);
+
+		return [{ json: { success: true, deleted: true, count: campaignIds.length, campaign_ids: campaignIds, response: responseData } }];
+	}
+
 	if (operation === 'addSequenceStep') {
 		// Add a sequence step to an existing campaign
 		const campaignId = this.getNodeParameter('campaignId', index) as string;

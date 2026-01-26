@@ -1,0 +1,87 @@
+import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+
+export async function executeBlacklistedEmailOperation(
+	this: IExecuteFunctions,
+	operation: string,
+	index: number,
+): Promise<IDataObject | INodeExecutionData[]> {
+	const credentials = await this.getCredentials('emailBisonApi');
+
+	if (operation === 'create') {
+		// Add email to blacklist
+		const email = this.getNodeParameter('email', index) as string;
+
+		if (!email || email.trim() === '') {
+			throw new Error('Please provide an email address to blacklist');
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/blacklisted-emails',
+				body: {
+					email: email.trim(),
+				},
+			},
+		);
+
+		return [{ json: responseData.data || responseData }];
+	}
+
+	if (operation === 'delete') {
+		// Remove email from blacklist
+		const blacklistedEmailId = this.getNodeParameter('blacklistedEmailId', index) as string;
+
+		if (!blacklistedEmailId || blacklistedEmailId.trim() === '') {
+			throw new Error('Please provide the blacklisted email ID to remove');
+		}
+
+		await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'DELETE',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: `/blacklisted-emails/${blacklistedEmailId}`,
+			},
+		);
+
+		return [{ json: { success: true, deleted: true, id: blacklistedEmailId } }];
+	}
+
+	if (operation === 'getMany') {
+		// Get all blacklisted emails
+		const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
+
+		const qs: IDataObject = {};
+
+		if (!returnAll) {
+			const limit = this.getNodeParameter('limit', index, 50) as number;
+			qs.limit = limit;
+		}
+
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'GET',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/blacklisted-emails',
+				qs,
+			},
+		);
+
+		const blacklistedEmails = responseData.data || responseData;
+
+		if (Array.isArray(blacklistedEmails)) {
+			return blacklistedEmails.map((item: IDataObject) => ({ json: item }));
+		}
+
+		return [{ json: blacklistedEmails }];
+	}
+
+	throw new Error(`The operation "${operation}" is not supported for blacklisted emails!`);
+}

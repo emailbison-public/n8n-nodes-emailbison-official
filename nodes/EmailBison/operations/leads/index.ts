@@ -18,14 +18,18 @@ export const leadOperations: INodeProperties[] = [
 				description: 'Create a new lead',
 				action: 'Create a lead',
 			},
-			// NOTE: DELETE endpoint does not exist in EmailBison API (as of 2025-10-19)
-			// Commented out but kept for future implementation
-			// {
-			// 	name: 'Delete',
-			// 	value: 'delete',
-			// 	description: 'Delete a lead',
-			// 	action: 'Delete a lead',
-			// },
+			{
+				name: 'Delete',
+				value: 'delete',
+				description: 'Delete a lead',
+				action: 'Delete a lead',
+			},
+			{
+				name: 'Delete Many',
+				value: 'deleteMany',
+				description: 'Delete multiple leads',
+				action: 'Delete many leads',
+			},
 			{
 				name: 'Get',
 				value: 'get',
@@ -50,7 +54,7 @@ export const leadOperations: INodeProperties[] = [
 ];
 
 export const leadFields: INodeProperties[] = [
-	// Get/Update operation fields - Lead selector (must come FIRST for update operation)
+	// Get/Update/Delete operation fields - Lead selector (must come FIRST for update operation)
 	{
 		displayName: 'Lead',
 		name: 'leadId',
@@ -62,11 +66,28 @@ export const leadFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['lead'],
-				operation: ['get', 'update'], // 'delete' removed - endpoint doesn't exist
+				operation: ['get', 'update', 'delete'],
 			},
 		},
 		default: '',
 		description: 'The lead to work with. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+
+	// Delete Many operation fields
+	{
+		displayName: 'Lead IDs',
+		name: 'leadIds',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['lead'],
+				operation: ['deleteMany'],
+			},
+		},
+		default: '',
+		description: 'Comma-separated list of lead IDs to delete (e.g., "123,456,789"). This action is permanent and cannot be undone.',
+		placeholder: '123,456,789',
 	},
 
 	// Create operation fields
