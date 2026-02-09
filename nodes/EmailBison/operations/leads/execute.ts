@@ -89,8 +89,6 @@ export async function executeLeadOperation(
 
 			return [{ json: leadData }];
 		} catch (error: any) {
-			console.error('❌ CREATE LEAD - Step 1: Error creating lead:', error.message);
-			console.error('❌ CREATE LEAD - Error details:', JSON.stringify(error.response?.body || error, null, 2));
 			throw error;
 		}
 	}

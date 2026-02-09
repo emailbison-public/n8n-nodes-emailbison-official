@@ -126,7 +126,6 @@ export class EmailBison implements INodeType {
 				const credentials = await this.getCredentials('emailBisonApi');
 
 				try {
-
 					const response = await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'emailBisonApi',
@@ -140,19 +139,10 @@ export class EmailBison implements INodeType {
 						},
 					);
 
-
 					const leads = response.data || response;
 
 					if (!Array.isArray(leads)) {
-						console.error('❌ getLeads: Response is not an array:', leads);
 						return [];
-					}
-
-
-					// Log pagination info if available
-					if (response.meta) {
-					}
-					if (response.links) {
 					}
 
 					return leads.map((lead: any) => ({
@@ -160,7 +150,6 @@ export class EmailBison implements INodeType {
 						value: lead.id.toString(),
 					}));
 				} catch (error) {
-					console.error('❌ Error loading leads:', error);
 					return [];
 				}
 			},
@@ -187,17 +176,14 @@ export class EmailBison implements INodeType {
 					const campaigns = response.data || response;
 
 					if (!Array.isArray(campaigns)) {
-						console.error('getCampaigns: Response is not an array:', campaigns);
 						return [];
 					}
-
 
 					return campaigns.map((campaign: any) => ({
 						name: `${campaign.name} - ${campaign.status || 'N/A'} (ID: ${campaign.id})`,
 						value: campaign.id.toString(),
 					}));
 				} catch (error) {
-					console.error('❌ Error loading campaigns:', error);
 					return [];
 				}
 			},
@@ -224,17 +210,14 @@ export class EmailBison implements INodeType {
 					const senderEmails = response.data || response;
 
 					if (!Array.isArray(senderEmails)) {
-						console.error('getSenderEmails: Response is not an array:', senderEmails);
 						return [];
 					}
-
 
 					return senderEmails.map((email: any) => ({
 						name: `${email.email} - ${email.name || 'N/A'} (ID: ${email.id})`,
 						value: email.id.toString(),
 					}));
 				} catch (error) {
-					console.error('❌ Error loading sender emails:', error);
 					return [];
 				}
 			},
@@ -261,17 +244,14 @@ export class EmailBison implements INodeType {
 					const workspaces = response.data || response;
 
 					if (!Array.isArray(workspaces)) {
-						console.error('getWorkspaces: Response is not an array:', workspaces);
 						return [];
 					}
-
 
 					return workspaces.map((workspace: any) => ({
 						name: `${workspace.name} (ID: ${workspace.id})`,
 						value: workspace.id.toString(),
 					}));
 				} catch (error) {
-					console.error('❌ Error loading workspaces:', error);
 					return [];
 				}
 			},
@@ -298,17 +278,14 @@ export class EmailBison implements INodeType {
 					const tags = response.data || response;
 
 					if (!Array.isArray(tags)) {
-						console.error('getTags: Response is not an array:', tags);
 						return [];
 					}
-
 
 					return tags.map((tag: any) => ({
 						name: `${tag.name} (ID: ${tag.id})`,
 						value: tag.id.toString(),
 					}));
 				} catch (error) {
-					console.error('❌ Error loading tags:', error);
 					return [];
 				}
 			},

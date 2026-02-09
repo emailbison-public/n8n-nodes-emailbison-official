@@ -127,6 +127,10 @@ WORKSPACES_V1.1_AUDIT_REPORT.md
 launch-chrome-debug.sh
 nodemon.json
 
+# Test workflow JSON files
+WORKING-*.json
+test-workflow-*.json
+
 # Test files
 *.test.ts
 *.test.js

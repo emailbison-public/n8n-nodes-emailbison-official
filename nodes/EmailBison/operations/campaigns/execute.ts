@@ -101,9 +101,7 @@ export async function executeCampaignOperation(
 					},
 				);
 			} catch (error) {
-				console.error(`❌ Failed to attach sender emails to campaign ${campaignId}:`, error);
-				// Don't throw - campaign was created successfully, just log the error
-				// The user can manually attach sender emails in the EmailBison UI
+				// Don't throw - campaign was created successfully
 			}
 		}
 
@@ -135,8 +133,7 @@ export async function executeCampaignOperation(
 					},
 				);
 			} catch (error) {
-				console.error(`❌ Failed to create sequence step for campaign ${campaignId}:`, error);
-				// Don't throw - campaign was created successfully, just log the error
+				// Don't throw - campaign was created successfully
 			}
 		}
 
@@ -279,8 +276,7 @@ export async function executeCampaignOperation(
 					},
 				);
 			} catch (error) {
-				console.error(`❌ Failed to attach sender emails to campaign ${campaignId}:`, error);
-				// Don't throw - campaign was updated successfully, just log the error
+				// Don't throw - campaign was updated successfully
 			}
 		}
 

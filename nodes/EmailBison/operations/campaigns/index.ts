@@ -406,117 +406,117 @@ export const campaignFields: INodeProperties[] = [
 		],
 	},
 
-// Add Sequence Step operation fields
-{
-	displayName: 'Campaign',
-	name: 'campaignId',
-	type: 'options',
-	typeOptions: {
-		loadOptionsMethod: 'getCampaigns',
+	// Add Sequence Step operation fields
+	{
+		displayName: 'Campaign',
+		name: 'campaignId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getCampaigns',
+		},
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['addSequenceStep'],
+			},
+		},
+		default: '',
+		description: 'The campaign to add the sequence step to. Choose from the list, or specify an ID using an expression.',
 	},
-	required: true,
-	displayOptions: {
-		show: {
-			resource: ['campaign'],
-			operation: ['addSequenceStep'],
+	{
+		displayName: 'Email Subject',
+		name: 'emailSubject',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['addSequenceStep'],
+			},
 		},
+		default: '',
+		description: 'Subject line for this email step',
 	},
-	default: '',
-	description: 'The campaign to add the sequence step to. Choose from the list, or specify an ID using an expression.',
-},
-{
-	displayName: 'Email Subject',
-	name: 'emailSubject',
-	type: 'string',
-	required: true,
-	displayOptions: {
-		show: {
-			resource: ['campaign'],
-			operation: ['addSequenceStep'],
+	{
+		displayName: 'Email Body',
+		name: 'emailBody',
+		type: 'string',
+		typeOptions: {
+			rows: 10,
 		},
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['addSequenceStep'],
+			},
+		},
+		default: '',
+		description: 'HTML content for this email step',
 	},
-	default: '',
-	description: 'Subject line for this email step',
-},
-{
-	displayName: 'Email Body',
-	name: 'emailBody',
-	type: 'string',
-	typeOptions: {
-		rows: 10,
+	{
+		displayName: 'Step Order',
+		name: 'stepOrder',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['addSequenceStep'],
+			},
+		},
+		default: 2,
+		description: 'The order of this step in the sequence (e.g., 2 for second email, 3 for third)',
 	},
-	required: true,
-	displayOptions: {
-		show: {
-			resource: ['campaign'],
-			operation: ['addSequenceStep'],
+	{
+		displayName: 'Wait Days',
+		name: 'waitDays',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['addSequenceStep'],
+			},
 		},
+		default: 3,
+		description: 'Number of days to wait before sending this email after the previous step',
 	},
-	default: '',
-	description: 'HTML content for this email step',
-},
-{
-	displayName: 'Step Order',
-	name: 'stepOrder',
-	type: 'number',
-	required: true,
-	displayOptions: {
-		show: {
-			resource: ['campaign'],
-			operation: ['addSequenceStep'],
+	{
+		displayName: 'Additional Fields',
+		name: 'additionalFields',
+		type: 'collection',
+		placeholder: 'Add Field',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['campaign'],
+				operation: ['addSequenceStep'],
+			},
 		},
+		options: [
+			{
+				displayName: 'Sequence Title',
+				name: 'sequenceTitle',
+				type: 'string',
+				default: '',
+				description: 'Optional title for the sequence (defaults to campaign name + " sequence")',
+			},
+			{
+				displayName: 'Is Variant',
+				name: 'variant',
+				type: 'boolean',
+				default: false,
+				description: 'Whether this is a variant email for A/B testing',
+			},
+			{
+				displayName: 'Thread Reply',
+				name: 'threadReply',
+				type: 'boolean',
+				default: false,
+				description: 'Whether this email should be sent as a reply in the same thread',
+			},
+		],
 	},
-	default: 2,
-	description: 'The order of this step in the sequence (e.g., 2 for second email, 3 for third)',
-},
-{
-	displayName: 'Wait Days',
-	name: 'waitDays',
-	type: 'number',
-	required: true,
-	displayOptions: {
-		show: {
-			resource: ['campaign'],
-			operation: ['addSequenceStep'],
-		},
-	},
-	default: 3,
-	description: 'Number of days to wait before sending this email after the previous step',
-},
-{
-	displayName: 'Additional Fields',
-	name: 'additionalFields',
-	type: 'collection',
-	placeholder: 'Add Field',
-	default: {},
-	displayOptions: {
-		show: {
-			resource: ['campaign'],
-			operation: ['addSequenceStep'],
-		},
-	},
-	options: [
-		{
-			displayName: 'Sequence Title',
-			name: 'sequenceTitle',
-			type: 'string',
-			default: '',
-			description: 'Optional title for the sequence (defaults to campaign name + " sequence")',
-		},
-		{
-			displayName: 'Is Variant',
-			name: 'variant',
-			type: 'boolean',
-			default: false,
-			description: 'Whether this is a variant email for A/B testing',
-		},
-		{
-			displayName: 'Thread Reply',
-			name: 'threadReply',
-			type: 'boolean',
-			default: false,
-			description: 'Whether this email should be sent as a reply in the same thread',
-		},
-	],
-},
 ];

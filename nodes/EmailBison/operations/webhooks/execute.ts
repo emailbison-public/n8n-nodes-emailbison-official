@@ -51,36 +51,6 @@ export async function executeWebhookOperation(
 		return [{ json: responseData.data || responseData }];
 	}
 
-	// DISABLED 2025-10-27: Endpoint Does Not Exist - Returns 404
-	// See GET_OPERATIONS_TEST_RESULTS.md for details
-	// The GET /api/webhooks endpoint does not exist in the EmailBison API.
-	// CLI Test: curl "https://send.topoffunnel.com/api/webhooks" returns:
-	// {"data":{"success":false,"message":"The route api/webhooks could not be found.","record_not_found":null}}
-	// Re-enable when EmailBison API implements this endpoint.
-	// if (operation === 'getMany') {
-	// 	const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
-	// 	const qs: IDataObject = {};
-
-	// 	if (!returnAll) {
-	// 		const limit = this.getNodeParameter('limit', index, 50) as number;
-	// 		qs.limit = limit;
-	// 	}
-
-	// 	const responseData = await this.helpers.httpRequestWithAuthentication.call(
-	// 		this,
-	// 		'emailBisonApi',
-	// 		{
-	// 			method: 'GET',
-	// 			baseURL: `${credentials.serverUrl}/api`,
-	// 			url: '/webhooks',
-	// 			qs,
-	// 		},
-	// 	);
-
-	// 	const webhooks = responseData.data || responseData;
-	// 	return webhooks.map((webhook: IDataObject) => ({ json: webhook }));
-	// }
-
 	if (operation === 'update') {
 		const webhookId = this.getNodeParameter('webhookId', index) as string;
 		const events = this.getNodeParameter('events', index, []) as string[];
