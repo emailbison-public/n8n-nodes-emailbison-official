@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeSequenceStepOperation(
 	this: IExecuteFunctions,
@@ -31,7 +31,7 @@ export async function executeSequenceStepOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -48,8 +48,8 @@ export async function executeSequenceStepOperation(
 			},
 		);
 
-		return [{ json: { success: true, id: sequenceStepId } }];
+		return [{ json: { success: true, id: sequenceStepId }, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`Unknown operation: ${operation}`);
+	throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
 }

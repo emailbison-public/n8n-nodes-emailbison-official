@@ -339,12 +339,12 @@ export class EmailBison implements INodeType {
 				if (Array.isArray(responseData)) {
 					returnData.push(...responseData);
 				} else {
-					returnData.push({ json: responseData });
+					returnData.push({ json: responseData, pairedItem: { item: i } });
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
 					const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-					returnData.push({ json: { error: errorMessage } });
+					returnData.push({ json: { error: errorMessage }, pairedItem: { item: i } });
 					continue;
 				}
 				throw error;

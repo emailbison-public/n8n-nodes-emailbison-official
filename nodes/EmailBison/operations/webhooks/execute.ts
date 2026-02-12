@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeWebhookOperation(
 	this: IExecuteFunctions,
@@ -32,7 +32,7 @@ export async function executeWebhookOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'get') {
@@ -48,7 +48,7 @@ export async function executeWebhookOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'update') {
@@ -74,7 +74,7 @@ export async function executeWebhookOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -90,8 +90,8 @@ export async function executeWebhookOperation(
 			},
 		);
 
-		return [{ json: { success: true, id: webhookId } }];
+		return [{ json: { success: true, id: webhookId }, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for webhooks!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for webhooks!`);
 }

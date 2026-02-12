@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeTagOperation(
 	this: IExecuteFunctions,
@@ -27,7 +27,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -51,7 +51,7 @@ export async function executeTagOperation(
 		);
 
 		const tags = responseData.data || responseData;
-		return tags.map((tag: IDataObject) => ({ json: tag }));
+		return tags.map((tag: IDataObject) => ({ json: tag, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'delete') {
@@ -67,7 +67,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'attachToLeads') {
@@ -89,7 +89,7 @@ export async function executeTagOperation(
 			// Single number: 33500
 			leadIdsArray = [leadIdsInput];
 		} else {
-			throw new Error('Lead IDs must be provided as a comma-separated string, array, or single number');
+			throw new NodeOperationError(this.getNode(),'Lead IDs must be provided as a comma-separated string, array, or single number');
 		}
 
 		const body: IDataObject = {
@@ -112,7 +112,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'removeFromLeads') {
@@ -134,7 +134,7 @@ export async function executeTagOperation(
 			// Single number: 33500
 			leadIdsArray = [leadIdsInput];
 		} else {
-			throw new Error('Lead IDs must be provided as a comma-separated string, array, or single number');
+			throw new NodeOperationError(this.getNode(),'Lead IDs must be provided as a comma-separated string, array, or single number');
 		}
 
 		const body: IDataObject = {
@@ -157,7 +157,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'attachToCampaigns') {
@@ -188,7 +188,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'removeFromCampaigns') {
@@ -219,7 +219,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'attachToEmailAccounts') {
@@ -250,7 +250,7 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'removeFromEmailAccounts') {
@@ -281,8 +281,8 @@ export async function executeTagOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for tags!`);
+	throw new NodeOperationError(this.getNode(),`The operation "${operation}" is not supported for tags!`);
 }

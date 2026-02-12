@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeCampaignOperation(
 	this: IExecuteFunctions,
@@ -19,13 +19,13 @@ export async function executeCampaignOperation(
 
 		// Validate required fields
 		if (!name || name.trim() === '') {
-			throw new Error('Please provide a campaign name');
+			throw new NodeOperationError(this.getNode(), 'Please provide a campaign name');
 		}
 		if (!subject || subject.trim() === '') {
-			throw new Error('Please provide an email subject');
+			throw new NodeOperationError(this.getNode(), 'Please provide an email subject');
 		}
 		if (!emailContent || emailContent.trim() === '') {
-			throw new Error('Please provide email content');
+			throw new NodeOperationError(this.getNode(), 'Please provide email content');
 		}
 
 		// Handle sender emails as array (multiOptions) or string (for backward compatibility)
@@ -42,7 +42,7 @@ export async function executeCampaignOperation(
 
 		// Validate sender emails
 		if (senderEmails.length === 0) {
-			throw new Error('Please select at least one sender email account');
+			throw new NodeOperationError(this.getNode(), 'Please select at least one sender email account');
 		}
 
 		// Handle tags as array (multiOptions) or string (for backward compatibility)
@@ -137,7 +137,7 @@ export async function executeCampaignOperation(
 			}
 		}
 
-		return [{ json: campaign }];
+		return [{ json: campaign, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'get') {
@@ -146,7 +146,7 @@ export async function executeCampaignOperation(
 
 		// Validate required field
 		if (!campaignId || campaignId.trim() === '') {
-			throw new Error('Please select a campaign');
+			throw new NodeOperationError(this.getNode(), 'Please select a campaign');
 		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -159,7 +159,7 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -190,7 +190,7 @@ export async function executeCampaignOperation(
 		);
 
 		const campaigns = responseData.data || responseData;
-		return campaigns.map((campaign: IDataObject) => ({ json: campaign }));
+		return campaigns.map((campaign: IDataObject) => ({ json: campaign, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'update') {
@@ -199,7 +199,7 @@ export async function executeCampaignOperation(
 
 		// Validate required field
 		if (!campaignId || campaignId.trim() === '') {
-			throw new Error('Please select a campaign to update');
+			throw new NodeOperationError(this.getNode(), 'Please select a campaign to update');
 		}
 
 		const name = this.getNodeParameter('name', index, '') as string;
@@ -280,7 +280,7 @@ export async function executeCampaignOperation(
 			}
 		}
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'resume') {
@@ -299,7 +299,7 @@ export async function executeCampaignOperation(
 		);
 
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'pause') {
@@ -318,7 +318,7 @@ export async function executeCampaignOperation(
 		);
 
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'addLeads') {
@@ -341,14 +341,14 @@ export async function executeCampaignOperation(
 			// Single number: 33500
 			leadIdsArray = [leadIdsInput];
 		} else {
-			throw new Error('Lead IDs must be provided as a comma-separated string, array, or single number');
+			throw new NodeOperationError(this.getNode(), 'Lead IDs must be provided as a comma-separated string, array, or single number');
 		}
 
 		// Filter out any NaN values
 		leadIdsArray = leadIdsArray.filter((id) => !isNaN(id));
 
 		if (leadIdsArray.length === 0) {
-			throw new Error('No valid lead IDs provided');
+			throw new NodeOperationError(this.getNode(), 'No valid lead IDs provided');
 		}
 
 
@@ -368,7 +368,7 @@ export async function executeCampaignOperation(
 		);
 
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -376,7 +376,7 @@ export async function executeCampaignOperation(
 		const campaignId = this.getNodeParameter('campaignId', index) as string;
 
 		if (!campaignId || campaignId.trim() === '') {
-			throw new Error('Please select a campaign to delete');
+			throw new NodeOperationError(this.getNode(), 'Please select a campaign to delete');
 		}
 
 		await this.helpers.httpRequestWithAuthentication.call(
@@ -389,7 +389,7 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		return [{ json: { success: true, deleted: true, id: campaignId } }];
+		return [{ json: { success: true, deleted: true, id: campaignId }, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'deleteMany') {
@@ -416,7 +416,7 @@ export async function executeCampaignOperation(
 		campaignIds = campaignIds.filter((id: number) => !isNaN(id));
 
 		if (campaignIds.length === 0) {
-			throw new Error('No valid campaign IDs provided. Please provide comma-separated numeric IDs, a single ID, or an array of IDs.');
+			throw new NodeOperationError(this.getNode(), 'No valid campaign IDs provided. Please provide comma-separated numeric IDs, a single ID, or an array of IDs.');
 		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -432,7 +432,7 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		return [{ json: { success: true, deleted: true, count: campaignIds.length, campaign_ids: campaignIds, response: responseData } }];
+		return [{ json: { success: true, deleted: true, count: campaignIds.length, campaign_ids: campaignIds, response: responseData }, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'addSequenceStep') {
@@ -494,8 +494,8 @@ export async function executeCampaignOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for campaigns!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for campaigns!`);
 }

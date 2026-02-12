@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeWorkspaceOperation(
 	this: IExecuteFunctions,
@@ -20,7 +20,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -44,7 +44,7 @@ export async function executeWorkspaceOperation(
 		);
 
 		const workspaces = responseData.data || responseData;
-		return workspaces.map((workspace: IDataObject) => ({ json: workspace }));
+		return workspaces.map((workspace: IDataObject) => ({ json: workspace, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'create') {
@@ -63,7 +63,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'update') {
@@ -84,7 +84,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -100,7 +100,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'createUser') {
@@ -123,7 +123,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'createApiToken') {
@@ -144,7 +144,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'switchWorkspace') {
@@ -163,7 +163,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'inviteMembers') {
@@ -186,7 +186,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'acceptInvitation') {
@@ -202,7 +202,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'deleteMember') {
@@ -218,7 +218,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMasterInboxSettings') {
@@ -232,7 +232,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'updateMasterInboxSettings') {
@@ -251,7 +251,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getStats') {
@@ -265,7 +265,7 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getLineAreaChartStats') {
@@ -279,8 +279,8 @@ export async function executeWorkspaceOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for workspaces!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for workspaces!`);
 }

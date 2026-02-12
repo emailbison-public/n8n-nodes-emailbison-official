@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeLeadOperation(
 	this: IExecuteFunctions,
@@ -43,54 +43,50 @@ export async function executeLeadOperation(
 			}
 		}
 
-		try {
-			const responseData = await this.helpers.httpRequestWithAuthentication.call(
-				this,
-				'emailBisonApi',
-				{
-					method: 'POST',
-					baseURL: `${credentials.serverUrl}/api`,
-					url: '/leads',
-					body,
-				},
-			);
+		const responseData = await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'emailBisonApi',
+			{
+				method: 'POST',
+				baseURL: `${credentials.serverUrl}/api`,
+				url: '/leads',
+				body,
+			},
+		);
 
-			const leadData = responseData.data || responseData;
-			const leadId = leadData.id;
+		const leadData = responseData.data || responseData;
+		const leadId = leadData.id;
 
-			// Step 2: Attach tags if provided (tags must be attached separately)
-			if (tags && tags.length > 0 && leadId) {
-				// Convert tags to array of integers
-				let tagIds: number[] = [];
-				if (Array.isArray(tags)) {
-					tagIds = tags.map((tag: string) => parseInt(tag, 10));
-				} else {
-					tagIds = tags.split(',').map((tag: string) => parseInt(tag.trim(), 10));
-				}
-
-				try {
-					await this.helpers.httpRequestWithAuthentication.call(
-						this,
-						'emailBisonApi',
-						{
-							method: 'POST',
-							baseURL: `${credentials.serverUrl}/api`,
-							url: '/tags/attach-to-leads',
-							body: {
-								lead_ids: [leadId],
-								tag_ids: tagIds,
-							},
-						},
-					);
-				} catch (error: any) {
-					// Don't throw - lead was created successfully, just tags failed
-				}
+		// Step 2: Attach tags if provided (tags must be attached separately)
+		if (tags && tags.length > 0 && leadId) {
+			// Convert tags to array of integers
+			let tagIds: number[] = [];
+			if (Array.isArray(tags)) {
+				tagIds = tags.map((tag: string) => parseInt(tag, 10));
+			} else {
+				tagIds = tags.split(',').map((tag: string) => parseInt(tag.trim(), 10));
 			}
 
-			return [{ json: leadData }];
-		} catch (error: any) {
-			throw error;
+			try {
+				await this.helpers.httpRequestWithAuthentication.call(
+					this,
+					'emailBisonApi',
+					{
+						method: 'POST',
+						baseURL: `${credentials.serverUrl}/api`,
+						url: '/tags/attach-to-leads',
+						body: {
+							lead_ids: [leadId],
+							tag_ids: tagIds,
+						},
+					},
+				);
+			} catch (_error) {
+				// Don't throw - lead was created successfully, just tags failed
+			}
 		}
+
+		return [{ json: leadData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'get') {
@@ -107,7 +103,7 @@ export async function executeLeadOperation(
 			},
 		);
 
-		return responseData;
+		return [{ json: responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -178,7 +174,7 @@ export async function executeLeadOperation(
 		const leads = responseData.data || responseData;
 
 		// Return in n8n format: array of objects with 'json' property
-		return leads.map((lead: IDataObject) => ({ json: lead }));
+		return leads.map((lead: IDataObject) => ({ json: lead, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'update') {
@@ -234,7 +230,7 @@ export async function executeLeadOperation(
 			},
 		);
 
-		return responseData;
+		return [{ json: responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -251,7 +247,7 @@ export async function executeLeadOperation(
 			},
 		);
 
-		return [{ json: { success: true, deleted: true, id: leadId } }];
+		return [{ json: { success: true, deleted: true, id: leadId }, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'deleteMany') {
@@ -278,7 +274,7 @@ export async function executeLeadOperation(
 		leadIds = leadIds.filter((id: number) => !isNaN(id));
 
 		if (leadIds.length === 0) {
-			throw new Error('No valid lead IDs provided. Please provide comma-separated numeric IDs, a single ID, or an array of IDs.');
+			throw new NodeOperationError(this.getNode(), 'No valid lead IDs provided. Please provide comma-separated numeric IDs, a single ID, or an array of IDs.');
 		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -294,8 +290,8 @@ export async function executeLeadOperation(
 			},
 		);
 
-		return [{ json: { success: true, deleted: true, count: leadIds.length, lead_ids: leadIds, response: responseData } }];
+		return [{ json: { success: true, deleted: true, count: leadIds.length, lead_ids: leadIds, response: responseData }, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for leads!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for leads!`);
 }

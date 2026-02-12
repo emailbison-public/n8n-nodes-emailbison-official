@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeBlacklistedDomainOperation(
 	this: IExecuteFunctions,
@@ -12,7 +12,7 @@ export async function executeBlacklistedDomainOperation(
 		const domain = this.getNodeParameter('domain', index) as string;
 
 		if (!domain || domain.trim() === '') {
-			throw new Error('Please provide a domain to blacklist');
+			throw new NodeOperationError(this.getNode(), 'Please provide a domain to blacklist');
 		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -28,7 +28,7 @@ export async function executeBlacklistedDomainOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -36,7 +36,7 @@ export async function executeBlacklistedDomainOperation(
 		const blacklistedDomainId = this.getNodeParameter('blacklistedDomainId', index) as string;
 
 		if (!blacklistedDomainId || blacklistedDomainId.trim() === '') {
-			throw new Error('Please provide the blacklisted domain ID to remove');
+			throw new NodeOperationError(this.getNode(), 'Please provide the blacklisted domain ID to remove');
 		}
 
 		await this.helpers.httpRequestWithAuthentication.call(
@@ -49,7 +49,7 @@ export async function executeBlacklistedDomainOperation(
 			},
 		);
 
-		return [{ json: { success: true, deleted: true, id: blacklistedDomainId } }];
+		return [{ json: { success: true, deleted: true, id: blacklistedDomainId }, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -77,11 +77,11 @@ export async function executeBlacklistedDomainOperation(
 		const blacklistedDomains = responseData.data || responseData;
 
 		if (Array.isArray(blacklistedDomains)) {
-			return blacklistedDomains.map((item: IDataObject) => ({ json: item }));
+			return blacklistedDomains.map((item: IDataObject) => ({ json: item, pairedItem: { item: index } }));
 		}
 
-		return [{ json: blacklistedDomains }];
+		return [{ json: blacklistedDomains, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for blacklisted domains!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for blacklisted domains!`);
 }

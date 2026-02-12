@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeEmailAccountOperation(
 	this: IExecuteFunctions,
@@ -40,7 +40,7 @@ export async function executeEmailAccountOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'get') {
@@ -57,7 +57,7 @@ export async function executeEmailAccountOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -83,7 +83,7 @@ export async function executeEmailAccountOperation(
 		);
 
 		const emailAccounts = responseData.data || responseData;
-		return emailAccounts.map((account: IDataObject) => ({ json: account }));
+		return emailAccounts.map((account: IDataObject) => ({ json: account, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'update') {
@@ -127,7 +127,7 @@ export async function executeEmailAccountOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -144,8 +144,8 @@ export async function executeEmailAccountOperation(
 			},
 		);
 
-		return [{ json: { success: true, id: emailAccountId } }];
+		return [{ json: { success: true, id: emailAccountId }, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for email accounts!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for email accounts!`);
 }

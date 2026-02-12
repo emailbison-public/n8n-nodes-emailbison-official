@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeReplyOperation(
 	this: IExecuteFunctions,
@@ -63,7 +63,7 @@ export async function executeReplyOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -95,7 +95,7 @@ export async function executeReplyOperation(
 		);
 
 		const replies = responseData.data || responseData;
-		return replies.map((reply: IDataObject) => ({ json: reply }));
+		return replies.map((reply: IDataObject) => ({ json: reply, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'markInterested') {
@@ -112,7 +112,7 @@ export async function executeReplyOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'pushToFollowup') {
@@ -137,8 +137,8 @@ export async function executeReplyOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`Unknown operation: ${operation}`);
+	throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
 }

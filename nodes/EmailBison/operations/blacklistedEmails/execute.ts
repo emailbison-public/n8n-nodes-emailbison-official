@@ -1,4 +1,4 @@
-import { IExecuteFunctions, IDataObject, INodeExecutionData } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, INodeExecutionData, NodeOperationError } from 'n8n-workflow';
 
 export async function executeBlacklistedEmailOperation(
 	this: IExecuteFunctions,
@@ -12,7 +12,7 @@ export async function executeBlacklistedEmailOperation(
 		const email = this.getNodeParameter('email', index) as string;
 
 		if (!email || email.trim() === '') {
-			throw new Error('Please provide an email address to blacklist');
+			throw new NodeOperationError(this.getNode(), 'Please provide an email address to blacklist');
 		}
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
@@ -28,7 +28,7 @@ export async function executeBlacklistedEmailOperation(
 			},
 		);
 
-		return [{ json: responseData.data || responseData }];
+		return [{ json: responseData.data || responseData, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'delete') {
@@ -36,7 +36,7 @@ export async function executeBlacklistedEmailOperation(
 		const blacklistedEmailId = this.getNodeParameter('blacklistedEmailId', index) as string;
 
 		if (!blacklistedEmailId || blacklistedEmailId.trim() === '') {
-			throw new Error('Please provide the blacklisted email ID to remove');
+			throw new NodeOperationError(this.getNode(), 'Please provide the blacklisted email ID to remove');
 		}
 
 		await this.helpers.httpRequestWithAuthentication.call(
@@ -49,7 +49,7 @@ export async function executeBlacklistedEmailOperation(
 			},
 		);
 
-		return [{ json: { success: true, deleted: true, id: blacklistedEmailId } }];
+		return [{ json: { success: true, deleted: true, id: blacklistedEmailId }, pairedItem: { item: index } }];
 	}
 
 	if (operation === 'getMany') {
@@ -77,11 +77,11 @@ export async function executeBlacklistedEmailOperation(
 		const blacklistedEmails = responseData.data || responseData;
 
 		if (Array.isArray(blacklistedEmails)) {
-			return blacklistedEmails.map((item: IDataObject) => ({ json: item }));
+			return blacklistedEmails.map((item: IDataObject) => ({ json: item, pairedItem: { item: index } }));
 		}
 
-		return [{ json: blacklistedEmails }];
+		return [{ json: blacklistedEmails, pairedItem: { item: index } }];
 	}
 
-	throw new Error(`The operation "${operation}" is not supported for blacklisted emails!`);
+	throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for blacklisted emails!`);
 }
