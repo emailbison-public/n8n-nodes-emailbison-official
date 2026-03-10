@@ -69,9 +69,8 @@ export async function executeEmailAccountOperation(
 			// Paginate through all pages until an empty page is returned
 			const allAccounts: IDataObject[] = [];
 			let page = 1;
-			const MAX_PAGES = 1000;
 
-			while (page <= MAX_PAGES) {
+			while (true) {
 				const responseData = await this.helpers.httpRequestWithAuthentication.call(
 					this,
 					'emailBisonApi',
@@ -88,8 +87,8 @@ export async function executeEmailAccountOperation(
 
 				allAccounts.push(...pageAccounts);
 
-				const totalFromMeta = responseData.meta?.total as number | undefined;
-				if (totalFromMeta !== undefined && allAccounts.length >= totalFromMeta) break;
+const lastPage = responseData.meta?.last_page as number | undefined;
+					if (lastPage !== undefined && page >= lastPage) break;
 
 				page++;
 			}

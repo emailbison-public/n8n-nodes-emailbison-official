@@ -151,9 +151,8 @@ export async function executeLeadOperation(
 			// Paginate through all pages until an empty page is returned
 			const allLeads: IDataObject[] = [];
 			let page = 1;
-			const MAX_PAGES = 1000;
 
-			while (page <= MAX_PAGES) {
+			while (true) {
 				const responseData = await this.helpers.httpRequestWithAuthentication.call(
 					this,
 					'emailBisonApi',
@@ -170,10 +169,9 @@ export async function executeLeadOperation(
 
 				allLeads.push(...pageLeads);
 
-				// If the page returned fewer items than a full page, we've reached the end
-				const totalFromMeta = responseData.meta?.total as number | undefined;
-				if (totalFromMeta !== undefined && allLeads.length >= totalFromMeta) break;
-
+				// Stop when we've reached the last page according to API metadata
+					const lastPage = responseData.meta?.last_page as number | undefined;
+					if (lastPage !== undefined && page >= lastPage) break;
 				page++;
 			}
 
