@@ -100,8 +100,8 @@ export async function executeReplyOperation(
 
 				allReplies.push(...pageReplies);
 
-const lastPage = responseData.meta?.last_page as number | undefined;
-					if (lastPage !== undefined && page >= lastPage) break;
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
 
 				page++;
 			}

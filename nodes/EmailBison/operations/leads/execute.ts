@@ -170,8 +170,8 @@ export async function executeLeadOperation(
 				allLeads.push(...pageLeads);
 
 				// Stop when we've reached the last page according to API metadata
-					const lastPage = responseData.meta?.last_page as number | undefined;
-					if (lastPage !== undefined && page >= lastPage) break;
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
 				page++;
 			}
 

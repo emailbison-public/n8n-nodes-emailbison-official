@@ -79,8 +79,8 @@ export async function executeBlacklistedEmailOperation(
 
 				allEmails.push(...pageEmails);
 
-const lastPage = responseData.meta?.last_page as number | undefined;
-					if (lastPage !== undefined && page >= lastPage) break;
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
 
 				page++;
 			}
