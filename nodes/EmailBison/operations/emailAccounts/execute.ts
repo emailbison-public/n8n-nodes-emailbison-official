@@ -63,27 +63,67 @@ export async function executeEmailAccountOperation(
 	if (operation === 'getMany') {
 		// Get multiple email accounts
 		const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
-
 		const qs: IDataObject = {};
 
-		if (!returnAll) {
+		if (returnAll) {
+			// Paginate through all pages until an empty page is returned
+			const allAccounts: IDataObject[] = [];
+			let page = 1;
+
+			while (true) {
+				const responseData = await this.helpers.httpRequestWithAuthentication.call(
+					this,
+					'emailBisonApi',
+					{
+						method: 'GET',
+						baseURL: `${credentials.serverUrl}/api`,
+						url: '/sender-emails',
+						qs: { ...qs, page },
+					},
+				);
+
+				const pageAccounts: IDataObject[] = responseData.data || responseData;
+				if (!Array.isArray(pageAccounts) || pageAccounts.length === 0) break;
+
+				allAccounts.push(...pageAccounts);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
+				page++;
+			}
+
+			return allAccounts.map((account: IDataObject) => ({ json: account, pairedItem: { item: index } }));
+		} else {
 			const limit = this.getNodeParameter('limit', index, 50) as number;
-			qs.limit = limit;
+			const collectedAccounts: IDataObject[] = [];
+			let page = 1;
+
+			while (collectedAccounts.length < limit) {
+				const responseData = await this.helpers.httpRequestWithAuthentication.call(
+					this,
+					'emailBisonApi',
+					{
+						method: 'GET',
+						baseURL: `${credentials.serverUrl}/api`,
+						url: '/sender-emails',
+						qs: { ...qs, page },
+					},
+				);
+
+				const pageAccounts: IDataObject[] = responseData.data || responseData;
+				if (!Array.isArray(pageAccounts) || pageAccounts.length === 0) break;
+
+				collectedAccounts.push(...pageAccounts);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
+				page++;
+			}
+
+			return collectedAccounts.slice(0, limit).map((account: IDataObject) => ({ json: account, pairedItem: { item: index } }));
 		}
-
-		const responseData = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'emailBisonApi',
-			{
-				method: 'GET',
-				baseURL: `${credentials.serverUrl}/api`,
-				url: '/sender-emails',
-				qs,
-			},
-		);
-
-		const emailAccounts = responseData.data || responseData;
-		return emailAccounts.map((account: IDataObject) => ({ json: account, pairedItem: { item: index } }));
 	}
 
 	if (operation === 'update') {
