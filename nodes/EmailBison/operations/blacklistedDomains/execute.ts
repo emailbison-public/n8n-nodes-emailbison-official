@@ -107,6 +107,10 @@ export async function executeBlacklistedDomainOperation(
 				if (!Array.isArray(pageDomains) || pageDomains.length === 0) break;
 
 				collectedDomains.push(...pageDomains);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
 				page++;
 			}
 

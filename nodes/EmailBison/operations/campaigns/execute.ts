@@ -223,6 +223,10 @@ export async function executeCampaignOperation(
 				if (!Array.isArray(pageCampaigns) || pageCampaigns.length === 0) break;
 
 				collectedCampaigns.push(...pageCampaigns);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
 				page++;
 			}
 

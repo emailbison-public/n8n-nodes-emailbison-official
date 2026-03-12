@@ -84,6 +84,10 @@ export async function executeTagOperation(
 				if (!Array.isArray(pageTags) || pageTags.length === 0) break;
 
 				collectedTags.push(...pageTags);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
 				page++;
 			}
 

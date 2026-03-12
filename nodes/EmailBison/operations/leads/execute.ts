@@ -197,6 +197,10 @@ export async function executeLeadOperation(
 				if (!Array.isArray(pageLeads) || pageLeads.length === 0) break;
 
 				collectedLeads.push(...pageLeads);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
 				page++;
 			}
 

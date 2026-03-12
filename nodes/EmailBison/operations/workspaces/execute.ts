@@ -77,6 +77,10 @@ export async function executeWorkspaceOperation(
 				if (!Array.isArray(pageWorkspaces) || pageWorkspaces.length === 0) break;
 
 				collectedWorkspaces.push(...pageWorkspaces);
+
+				const lastPage = responseData.meta?.last_page as number | undefined;
+				if (lastPage !== undefined && page >= lastPage) break;
+
 				page++;
 			}
 
