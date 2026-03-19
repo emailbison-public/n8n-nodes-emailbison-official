@@ -207,9 +207,10 @@ export const workspaceFields: INodeProperties[] = [
 		description: 'Email address of the user',
 	},
 	{
-		displayName: 'First Name',
-		name: 'firstName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
+		required: true,
 		displayOptions: {
 			show: {
 				resource: ['workspace'],
@@ -217,12 +218,16 @@ export const workspaceFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'First name of the user',
+		description: 'Full name of the user',
 	},
 	{
-		displayName: 'Last Name',
-		name: 'lastName',
+		displayName: 'Password',
+		name: 'password',
 		type: 'string',
+		typeOptions: {
+			password: true,
+		},
+		required: true,
 		displayOptions: {
 			show: {
 				resource: ['workspace'],
@@ -230,7 +235,27 @@ export const workspaceFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'Last name of the user',
+		description: 'Password for the new user',
+	},
+	{
+		displayName: 'Role',
+		name: 'role',
+		type: 'options',
+		options: [
+			{ name: 'Admin', value: 'admin' },
+			{ name: 'Editor', value: 'editor' },
+			{ name: 'Client', value: 'client' },
+			{ name: 'Reseller', value: 'reseller' },
+		],
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['workspace'],
+				operation: ['createUser'],
+			},
+		},
+		default: 'admin',
+		description: 'Role of the new user',
 	},
 
 	// Create API Token operation fields

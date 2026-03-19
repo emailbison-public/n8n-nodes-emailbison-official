@@ -146,12 +146,16 @@ export async function executeWorkspaceOperation(
 
 	if (operation === 'createUser') {
 		const email = this.getNodeParameter('email', index) as string;
-		const firstName = this.getNodeParameter('firstName', index, '') as string;
-		const lastName = this.getNodeParameter('lastName', index, '') as string;
+		const name = this.getNodeParameter('name', index) as string;
+		const password = this.getNodeParameter('password', index) as string;
+		const role = this.getNodeParameter('role', index) as string;
 
-		const body: IDataObject = { email };
-		if (firstName) body.first_name = firstName;
-		if (lastName) body.last_name = lastName;
+		const body: IDataObject = {
+			email,
+			name,
+			password,
+			role,
+		};
 
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
