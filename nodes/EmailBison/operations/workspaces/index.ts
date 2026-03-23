@@ -254,7 +254,7 @@ export const workspaceFields: INodeProperties[] = [
 				operation: ['createUser'],
 			},
 		},
-		default: 'admin',
+		default: 'editor',
 		description: 'Role of the new user',
 	},
 

@@ -145,10 +145,19 @@ export async function executeWorkspaceOperation(
 	}
 
 	if (operation === 'createUser') {
-		const email = this.getNodeParameter('email', index) as string;
-		const name = this.getNodeParameter('name', index) as string;
+		const email = (this.getNodeParameter('email', index) as string).trim();
+		const name = (this.getNodeParameter('name', index) as string).trim();
 		const password = this.getNodeParameter('password', index) as string;
+		const passwordForValidation = password.trim();
 		const role = this.getNodeParameter('role', index) as string;
+
+		if (!email || !name || !passwordForValidation) {
+			throw new NodeOperationError(
+				this.getNode(),
+				'Email, name, and password are required and cannot be empty',
+				{ itemIndex: index },
+			);
+		}
 
 		const body: IDataObject = {
 			email,
