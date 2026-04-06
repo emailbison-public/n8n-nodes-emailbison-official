@@ -373,4 +373,32 @@ export const workspaceFields: INodeProperties[] = [
 		default: '{}',
 		description: 'Master inbox settings as JSON object',
 	},
+	{
+		displayName: 'Start Date',
+		name: 'startDate',
+		type: 'dateTime',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['workspace'],
+				operation: ['getStats', 'getLineAreaChartStats'],
+			},
+		},
+		default: '',
+		description: 'Start date for the stats range (YYYY-MM-DD)',
+	},
+	{
+		displayName: 'End Date',
+		name: 'endDate',
+		type: 'dateTime',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['workspace'],
+				operation: ['getStats', 'getLineAreaChartStats'],
+			},
+		},
+		default: '',
+		description: 'End date for the stats range (YYYY-MM-DD)',
+	},
 ];
