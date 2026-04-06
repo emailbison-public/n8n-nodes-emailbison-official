@@ -6,6 +6,17 @@ export async function executeWorkspaceOperation(
 	index: number,
 ): Promise<IDataObject | INodeExecutionData[]> {
 	const credentials = await this.getCredentials('emailBisonApi');
+	const normalizeDateParam = (value: string, fieldName: string): string => {
+		const normalized = value.trim().split('T')[0];
+		if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+			throw new NodeOperationError(
+				this.getNode(),
+				`${fieldName} must be a valid date in YYYY-MM-DD format`,
+				{ itemIndex: index },
+			);
+		}
+		return normalized;
+	};
 
 	if (operation === 'get') {
 		const teamId = this.getNodeParameter('teamId', index) as string;
@@ -309,6 +320,9 @@ export async function executeWorkspaceOperation(
 	}
 
 	if (operation === 'getStats') {
+		const startDate = normalizeDateParam(this.getNodeParameter('startDate', index) as string, 'Start Date');
+		const endDate = normalizeDateParam(this.getNodeParameter('endDate', index) as string, 'End Date');
+
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
@@ -316,6 +330,10 @@ export async function executeWorkspaceOperation(
 				method: 'GET',
 				baseURL: `${credentials.serverUrl}/api`,
 				url: '/workspaces/v1.1/stats',
+				qs: {
+					start_date: startDate,
+					end_date: endDate,
+				},
 			},
 		);
 
@@ -323,6 +341,9 @@ export async function executeWorkspaceOperation(
 	}
 
 	if (operation === 'getLineAreaChartStats') {
+		const startDate = normalizeDateParam(this.getNodeParameter('startDate', index) as string, 'Start Date');
+		const endDate = normalizeDateParam(this.getNodeParameter('endDate', index) as string, 'End Date');
+
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(
 			this,
 			'emailBisonApi',
@@ -330,6 +351,10 @@ export async function executeWorkspaceOperation(
 				method: 'GET',
 				baseURL: `${credentials.serverUrl}/api`,
 				url: '/workspaces/v1.1/line-area-chart-stats',
+				qs: {
+					start_date: startDate,
+					end_date: endDate,
+				},
 			},
 		);
 
