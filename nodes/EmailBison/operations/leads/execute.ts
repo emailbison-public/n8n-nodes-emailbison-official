@@ -81,8 +81,11 @@ export async function executeLeadOperation(
 						},
 					},
 				);
-			} catch (_error) {
-				// Don't throw - lead was created successfully, just tags failed
+			} catch (error) {
+				throw new NodeOperationError(this.getNode(), error as Error, {
+					itemIndex: index,
+					message: 'Failed to attach tags to the created lead',
+				});
 			}
 		}
 

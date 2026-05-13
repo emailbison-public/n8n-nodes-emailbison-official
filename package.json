@@ -38,6 +38,7 @@
     "lintfix": "eslint nodes credentials package.json --fix",
     "test": "jest",
     "test:watch": "jest --watch",
+    "publish:provenance": "npm publish --provenance --access public",
     "prepublishOnly": "npm run build && eslint -c .eslintrc.prepublish.js nodes/**/*.ts credentials/**/*.ts"
   },
   "files": [

@@ -101,7 +101,10 @@ export async function executeCampaignOperation(
 					},
 				);
 			} catch (error) {
-				// Don't throw - campaign was created successfully
+				throw new NodeOperationError(this.getNode(), error as Error, {
+					itemIndex: index,
+					message: 'Failed to attach sender emails to the created campaign',
+				});
 			}
 		}
 
@@ -133,7 +136,10 @@ export async function executeCampaignOperation(
 					},
 				);
 			} catch (error) {
-				// Don't throw - campaign was created successfully
+				throw new NodeOperationError(this.getNode(), error as Error, {
+					itemIndex: index,
+					message: 'Failed to create the first sequence step for the campaign',
+				});
 			}
 		}
 
@@ -317,7 +323,10 @@ export async function executeCampaignOperation(
 					},
 				);
 			} catch (error) {
-				// Don't throw - campaign was updated successfully
+				throw new NodeOperationError(this.getNode(), error as Error, {
+					itemIndex: index,
+					message: 'Failed to attach sender emails to the updated campaign',
+				});
 			}
 		}
 
