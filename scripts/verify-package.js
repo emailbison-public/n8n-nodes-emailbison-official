@@ -49,6 +49,7 @@ for (const entry of [...pkg.n8n.nodes, ...pkg.n8n.credentials]) {
 
 assert(fs.existsSync(path.join(root, 'index.js')), 'Root index.js missing from package');
 assert(fs.existsSync(path.join(root, 'dist/nodes/EmailBison/emailbison.svg')), 'Node icon missing from dist output');
+assert(fs.existsSync(path.join(root, 'dist/credentials/emailbison.svg')), 'Credential icon missing from dist/credentials');
 
 console.log('Package verification passed.');
 console.log(`- Node: ${node.description.displayName}`);

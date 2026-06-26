@@ -20,4 +20,6 @@ run('Build', ['run', 'build']);
 run('Package verification', ['run', 'verify']);
 run('Lint', ['run', 'lint']);
 
+require('./verify-strapi-version');
+
 console.log('\nAudit verification passed.');

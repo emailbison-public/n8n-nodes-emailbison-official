@@ -1,8 +1,14 @@
-const { src, dest } = require('gulp');
+const { src, dest, parallel } = require('gulp');
 
-function buildIcons() {
-  return src('nodes/**/*.{png,svg,json}')
-    .pipe(dest('dist/nodes'));
+function buildNodeIcons() {
+	src('nodes/EmailBison/*.node.json').pipe(dest('dist/nodes/EmailBison'));
+	return src('nodes/EmailBison/*.{svg,png}').pipe(dest('dist/nodes/EmailBison'));
 }
+
+function buildCredentialIcons() {
+	return src('credentials/*.{svg,png}').pipe(dest('dist/credentials'));
+}
+
+const buildIcons = parallel(buildNodeIcons, buildCredentialIcons);
 
 exports['build:icons'] = buildIcons;
