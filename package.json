@@ -38,6 +38,7 @@
     "lintfix": "eslint nodes credentials package.json --fix",
     "verify": "npm run build && node scripts/verify-package.js && node scripts/verify-n8n-load.js",
     "verify:audit": "node scripts/verify-audit.js",
+    "push:all": "git push origin main --tags && git push personal main --tags",
     "test": "jest",
     "test:watch": "jest --watch",
     "publish:provenance": "npm publish --provenance --access public",
