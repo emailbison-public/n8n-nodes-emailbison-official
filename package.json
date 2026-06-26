@@ -36,13 +36,16 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes/**/*.ts credentials/**/*.ts",
     "lintfix": "eslint nodes credentials package.json --fix",
+    "verify": "npm run build && node scripts/verify-package.js && node scripts/verify-n8n-load.js",
+    "verify:audit": "node scripts/verify-audit.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "publish:provenance": "npm publish --provenance --access public",
-    "prepublishOnly": "npm run build && eslint -c .eslintrc.prepublish.js nodes/**/*.ts credentials/**/*.ts"
+    "prepublishOnly": "npm run verify:audit"
   },
   "files": [
-    "dist"
+    "dist",
+    "index.js"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

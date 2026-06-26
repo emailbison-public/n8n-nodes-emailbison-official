@@ -23,8 +23,7 @@
   },
   "include": [
     "credentials/**/*",
-    "nodes/**/*",
-    "index.ts"
+    "nodes/**/*"
   ],
   "exclude": [
     "dist",
